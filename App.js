@@ -10,6 +10,9 @@ import HistoryScreen from "./src/screens/HistoryScreen";
 import FavoriteScreen from "./src/screens/FavoriteScreen";
 import ProductScreen from "./src/screens/ProductScreen";
 import ScanBarCode from "./src/components/ScanBarCode";
+import LoginSreen from "./src/screens/LoginSreen";
+import ForgotPasswordScreen from "./src/screens/ForgotPasswordScreen";
+import RegisterScreen from "./src/screens/RegisterScreen";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -40,48 +43,77 @@ function FavoritesStack() {
 }
 
 export default function App() {
+    const isLogin = false;
     return (
         <NavigationContainer>
-            <Tab.Navigator>
-                <Tab.Screen
-                    name="Main"
-                    component={HomeStack}
-                    options={{
-                        tabBarLabel: "Home",
-                        tabBarIcon: () => <Icon name="home" type="ionicons" />,
+            {isLogin ? (
+                <Tab.Navigator>
+                    <Tab.Screen
+                        name="Main"
+                        component={HomeStack}
+                        options={{
+                            tabBarLabel: "Home",
+                            tabBarIcon: () => (
+                                <Icon name="home" type="ionicons" />
+                            ),
+                        }}
+                    />
+                    <Tab.Screen
+                        name="Scan"
+                        component={ScanBarCode}
+                        options={{
+                            tabBarLabel: "Scanner",
+                            tabBarIcon: () => (
+                                <Icon name="barcode" type="antdesign" />
+                            ),
+                        }}
+                    />
+                    <Tab.Screen
+                        name="Favorites"
+                        component={FavoritesStack}
+                        options={{
+                            tabBarLabel: "Favorites",
+                            tabBarIcon: () => (
+                                <Icon name="heart" type="antdesign" />
+                            ),
+                        }}
+                    />
+                    <Tab.Screen
+                        name="History"
+                        component={HistoryStack}
+                        options={{
+                            tabBarLabel: "Historical",
+                            tabBarIcon: () => (
+                                <Icon name="filetext1" type="antdesign" />
+                            ),
+                        }}
+                    />
+                </Tab.Navigator>
+            ) : (
+                <Stack.Navigator
+                    screenOptions={{
+                        headerShown: false,
                     }}
-                />
-                <Tab.Screen
-                    name="Scan"
-                    component={ScanBarCode}
-                    options={{
-                        tabBarLabel: "Scanner",
-                        tabBarIcon: () => (
-                            <Icon name="barcode" type="antdesign" />
-                        ),
-                    }}
-                />
-                <Tab.Screen
-                    name="Favorites"
-                    component={FavoritesStack}
-                    options={{
-                        tabBarLabel: "Favorites",
-                        tabBarIcon: () => (
-                            <Icon name="heart" type="antdesign" />
-                        ),
-                    }}
-                />
-                <Tab.Screen
-                    name="History"
-                    component={HistoryStack}
-                    options={{
-                        tabBarLabel: "Historical",
-                        tabBarIcon: () => (
-                            <Icon name="filetext1" type="antdesign" />
-                        ),
-                    }}
-                />
-            </Tab.Navigator>
+                    initialRouteName="LoginScreen"
+                >
+                    <Stack.Screen
+                        name="LoginSreen"
+                        component={LoginSreen}
+                        options={{
+                            gestureEnabled: false,
+                            animationEnabled: false,
+                        }}
+                    />
+                    <Stack.Screen
+                        name="ForgotPasswordScreen"
+                        component={ForgotPasswordScreen}
+                    />
+                    <Stack.Screen
+                        name="RegisterScreen"
+                        component={RegisterScreen}
+                    />
+                </Stack.Navigator>
+            )}
         </NavigationContainer>
     );
 }
