@@ -4,6 +4,7 @@ import { BarCodeScanner } from "expo-barcode-scanner";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { insertProduct } from "../utils/database";
+import { OPEN_API_FOOD } from "../constants";
 
 function ScanBarCode({ navigation }) {
     const [hasPermission, setHasPermission] = useState(null);
@@ -37,7 +38,7 @@ function ScanBarCode({ navigation }) {
         setScanned(true);
         Vibration.vibrate();
 
-        fetch(`https://world.openfoodfacts.org/api/v0/product/${data}.json`)
+        fetch(`${OPEN_API_FOOD}/${data}.json`)
             .then((response) => response.json())
             .then((json) => {
                 if (json.status_verbose === "product found") {
