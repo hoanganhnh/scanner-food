@@ -1,5 +1,7 @@
+import { unwrapResult } from "@reduxjs/toolkit";
 import * as React from "react";
 import {
+    Alert,
     Keyboard,
     SafeAreaView,
     StatusBar,
@@ -8,23 +10,29 @@ import {
     View,
 } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { useDispatch } from "react-redux";
+import { login, setAuth, setToken } from "../app/slices/auth";
 
-import { CommonButton } from "../components/common/CommonButton/CommonButton";
-import { CommonInput } from "../components/common/CommonInput/CommonInput";
-import { CommonText } from "../components/common/CommonText/CommonText";
+import { CommonButton } from "../components/common/CommonButton";
+import { CommonInput } from "../components/common/CommonInput";
+import { CommonText } from "../components/common/CommonText";
 import { FontSize, FontWithBold, Spacing } from "../styles/spacing";
+import { toggleLoading } from "../app/slices/loading";
 import { Device } from "../styles/values";
 
+// @TODO: handle validate
 function LoginSreen({ navigation }) {
-    const [userName, setUserName] = React.useState("");
+    const [email, setEmail] = React.useState("");
     const [password, setPassword] = React.useState("");
     const [errorList, setErrorList] = React.useState([]);
     const passwordRef = React.useRef();
 
-    const handleLogin = () => {
+    const dispath = useDispatch();
+
+    const handleLogin = async () => {
         Keyboard.dismiss();
         let err = [];
-        if (!userName) {
+        if (!email) {
             err.push("Email is require");
         }
         if (password === "") {
@@ -32,8 +40,25 @@ function LoginSreen({ navigation }) {
         }
         setErrorList(err);
         if (err.length === 0) {
-            console.log("login");
+            dispath(toggleLoading(true));
+            try {
+                const payload = {
+                    identifier: email,
+                    password,
+                };
+                const result = await dispath(login(payload));
+                const { jwt, user } = unwrapResult(result);
+                dispath(setToken(jwt));
+                dispath(setAuth(user));
+            } catch (err) {
+                console.log(err);
+                dispath(toggleLoading(false));
+                if (err.error) {
+                    Alert.alert(err.error.message);
+                }
+            }
         }
+        dispath(toggleLoading(false));
     };
     const forgotPasswordNavigate = () => {
         navigation.navigate("ForgotPasswordScreen");
@@ -76,9 +101,9 @@ function LoginSreen({ navigation }) {
                     <View style={styles.contentContainer}>
                         <CommonInput
                             placeholder={"Email"}
-                            value={userName}
+                            value={email}
                             onChangeText={(e) => {
-                                setUserName(e);
+                                setEmail(e);
                             }}
                             keyboardType="email-address"
                             returnKeyType="next"

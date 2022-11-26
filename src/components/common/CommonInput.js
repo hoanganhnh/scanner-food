@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { View, TextInput, StyleSheet } from "react-native";
 
-import { Color } from "../../../styles/color";
-import { FontSize } from "../../../styles/spacing";
-import { Device } from "../../../styles/values";
-import { CommonText } from "../CommonText/CommonText";
+import { Color } from "../../styles/color";
+import { FontSize } from "../../styles/spacing";
+import { Device } from "../../styles/values";
+import { CommonText } from "./CommonText";
 
 export function CommonInput(props) {
     const {

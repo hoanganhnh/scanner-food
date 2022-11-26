@@ -1,5 +1,7 @@
+import { unwrapResult } from "@reduxjs/toolkit";
 import * as React from "react";
 import {
+    Alert,
     Keyboard,
     SafeAreaView,
     StatusBar,
@@ -8,13 +10,17 @@ import {
     View,
 } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { useDispatch } from "react-redux";
 
-import { CommonButton } from "../components/common/CommonButton/CommonButton";
-import { CommonInput } from "../components/common/CommonInput/CommonInput";
-import { CommonText } from "../components/common/CommonText/CommonText";
 import { FontSize, FontWithBold, Spacing } from "../styles/spacing";
+import { register, setAuth, setToken } from "../app/slices/auth";
 import { Device } from "../styles/values";
+import { CommonInput } from "../components/common/CommonInput";
+import { CommonText } from "../components/common/CommonText";
+import { CommonButton } from "../components/common/CommonButton";
+import { toggleLoading } from "../app/slices/loading";
 
+// @TODO: handle validate
 function RegisterScreen({ navigation }) {
     const [userName, setUserName] = React.useState("");
     const [password, setPassword] = React.useState("");
@@ -22,7 +28,9 @@ function RegisterScreen({ navigation }) {
     const [errorList, setErrorList] = React.useState([]);
     const passwordRef = React.useRef();
 
-    const handleRegister = () => {
+    const dispath = useDispatch();
+
+    const handleRegister = async () => {
         Keyboard.dismiss();
         let err = [];
         if (email === "") {
@@ -36,8 +44,26 @@ function RegisterScreen({ navigation }) {
         }
         setErrorList(err);
         if (err.length === 0) {
-            console.log("register");
+            dispath(toggleLoading(true));
+            try {
+                const payload = {
+                    username: userName,
+                    email,
+                    password,
+                };
+                const result = await dispath(register(payload));
+                const { jwt, user } = unwrapResult(result);
+                dispath(setToken(jwt));
+                dispath(setAuth(user));
+            } catch (error) {
+                console.log(error);
+                dispath(toggleLoading(false));
+                if (error.error) {
+                    Alert.alert(error.error.message);
+                }
+            }
         }
+        dispath(toggleLoading(false));
     };
     const loginNavigate = () => {
         navigation.navigate("LoginSreen");

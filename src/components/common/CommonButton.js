@@ -1,9 +1,9 @@
 import React from "react";
 import { StyleSheet, TouchableOpacity, Image } from "react-native";
 
-import { Color } from "../../../styles/color";
-import { FontSize, FontWithBold, Spacing } from "../../../styles/spacing";
-import { CommonText } from "../CommonText/CommonText";
+import { Color } from "../../styles/color";
+import { FontSize, FontWithBold, Spacing } from "../../styles/spacing";
+import { CommonText } from "./CommonText";
 
 export const CommonButton = (props) => {
     let { title, disabled, onPress, style, icon, textStyle, ...rest } = props;

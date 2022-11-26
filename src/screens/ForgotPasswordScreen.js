@@ -8,12 +8,13 @@ import {
 } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
-import { CommonButton } from "../components/common/CommonButton/CommonButton";
-import { CommonInput } from "../components/common/CommonInput/CommonInput";
-import { CommonText } from "../components/common/CommonText/CommonText";
+import { CommonButton } from "../components/common/CommonButton";
+import { CommonInput } from "../components/common/CommonInput";
+import { CommonText } from "../components/common/CommonText";
 import { FontSize, Spacing } from "../styles/spacing";
 import { Device } from "../styles/values";
 
+// @TODO: handle validate
 function LoginSreen() {
     const [email, setEmail] = React.useState("");
     const [errorList, setErrorList] = React.useState([]);

@@ -1,8 +1,8 @@
 import * as React from "react";
 import { Text as ReactNativeText } from "react-native";
 
-import { Color } from "../../../styles/color";
-import { FontSize, FontWithBold } from "../../../styles/spacing";
+import { Color } from "../../styles/color";
+import { FontSize, FontWithBold } from "../../styles/spacing";
 
 export function CommonText(props) {
     // grab the props
