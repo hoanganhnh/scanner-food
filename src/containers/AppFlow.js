@@ -14,6 +14,7 @@ import LoginSreen from "../screens/LoginSreen";
 import RegisterScreen from "../screens/RegisterScreen";
 import SettingSreen from "../screens/SettingSreen";
 import ProfileSreen from "../screens/ProfileSreen";
+import AddProductSreen from "../screens/AddProductSreen";
 import { isAuthenticated } from "../app/slices/auth";
 
 const Tab = createBottomTabNavigator();
@@ -53,6 +54,14 @@ function SettingStack() {
     );
 }
 
+function AddNewProductStack() {
+    return (
+        <Stack.Navigator>
+            <Stack.Screen name="Add New Product" component={AddProductSreen} />
+        </Stack.Navigator>
+    );
+}
+
 function Home() {
     return (
         <Tab.Navigator>
@@ -70,6 +79,14 @@ function Home() {
                 options={{
                     tabBarLabel: "Scanner",
                     tabBarIcon: () => <Icon name="barcode" type="antdesign" />,
+                }}
+            />
+            <Tab.Screen
+                name="AddNewProductStack"
+                component={AddNewProductStack}
+                options={{
+                    tabBarLabel: "Add",
+                    tabBarIcon: () => <Icon name="plus" type="antdesign" />,
                 }}
             />
             <Tab.Screen
