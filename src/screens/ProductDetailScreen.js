@@ -1,30 +1,35 @@
 import React from "react";
 import {
-    Text,
-    View,
-    StyleSheet,
-    Image,
-    ScrollView,
     SafeAreaView,
+    ScrollView,
+    View,
+    Text,
+    Image,
+    StyleSheet,
+    TouchableOpacity,
     Switch,
 } from "react-native";
 import { Icon, Input, Button } from "react-native-elements";
-import { SelectList } from "react-native-dropdown-select-list";
 import * as ImagePicker from "expo-image-picker";
-import { format } from "date-fns";
+import { SelectList } from "react-native-dropdown-select-list";
 
-import { ImageProductDefault } from "../components/Image";
-import { classificationData } from "../constants/classifications";
 import { Device } from "../styles/values";
+import { format } from "date-fns";
+import { classificationData } from "../constants/classifications";
 import DatePicker from "../components/DatePicker";
 
-function AddProductSreen() {
+function ProductDetailScreen({ route }) {
+    const { product } = route.params;
+
     const [image, setImage] = React.useState(null);
     const [classification, setClassification] = React.useState([]);
     const [datePurchase, setDatePurchase] = React.useState("");
     const [dateExpired, setDateExpired] = React.useState("");
     const [nameProduct, setNameProduct] = React.useState("");
-    const [isNotification, setIsNotification] = React.useState(false);
+    const [isNotification, setIsNotification] = React.useState(
+        product.notification
+    );
+    const [favorite, setFavorite] = React.useState(product.like);
 
     const pickImage = async () => {
         try {
@@ -51,12 +56,12 @@ function AddProductSreen() {
         setIsNotification(!isNotification);
     };
 
-    const handleReset = () => {
-        setDatePurchase("");
-        setDateExpired("");
-        setNameProduct("");
-        setIsNotification(false);
-        setImage(null);
+    const handleFavorite = () => {
+        setFavorite((state) => !state);
+    };
+
+    const handleUpdate = () => {
+        console.log("update");
     };
 
     return (
@@ -65,7 +70,7 @@ function AddProductSreen() {
                 <ScrollView>
                     <Image
                         style={styles.image}
-                        source={image ? { uri: image } : ImageProductDefault}
+                        source={{ uri: image ? image : product.image }}
                     />
                     <View style={styles.container}>
                         <Text style={{ fontSize: 16, marginVertical: 12 }}>
@@ -92,7 +97,7 @@ function AddProductSreen() {
                             Name product:
                         </Text>
                         <Input
-                            value={nameProduct}
+                            value={nameProduct || product.name}
                             onChangeText={handleChangeNameProduct}
                             placeholder="Name product..."
                         />
@@ -106,7 +111,7 @@ function AddProductSreen() {
                                 Purchase date:{" "}
                                 {datePurchase
                                     ? format(datePurchase, "dd/MM/yyyy")
-                                    : ""}
+                                    : product.datePurchase}
                             </Text>
                             <DatePicker getDate={setDatePurchase} />
                         </View>
@@ -121,7 +126,7 @@ function AddProductSreen() {
                                 Expired date:{" "}
                                 {dateExpired
                                     ? format(dateExpired, "dd/MM/yyyy")
-                                    : ""}
+                                    : product.dateExpired}
                             </Text>
                             <DatePicker getDate={setDateExpired} />
                         </View>
@@ -131,6 +136,9 @@ function AddProductSreen() {
                             save="value"
                             onSelect={() => console.log(classification)}
                             placeholder="Classification"
+                            defaultOption={classificationData.find(
+                                (item) => item.value === product.categories
+                            )}
                         />
                         <View
                             style={{
@@ -147,8 +155,31 @@ function AddProductSreen() {
                                 onChange={handleChangeNotification}
                             />
                         </View>
+                        <View
+                            style={{
+                                flexDirection: "row",
+                                justifyContent: "space-between",
+                                marginVertical: 24,
+                            }}
+                        >
+                            <Text style={{ fontSize: 16, marginVertical: 12 }}>
+                                Add favorite:
+                            </Text>
+                            <TouchableOpacity
+                                style={{
+                                    padding: 10,
+                                }}
+                                onPress={handleFavorite}
+                            >
+                                {favorite ? (
+                                    <Icon name="heart" type="antdesign" />
+                                ) : (
+                                    <Icon name="hearto" type="antdesign" />
+                                )}
+                            </TouchableOpacity>
+                        </View>
                         <Button
-                            title="Reset"
+                            title="Update"
                             buttonStyle={{
                                 backgroundColor: "rgba(39, 39, 39, 1)",
                             }}
@@ -159,20 +190,7 @@ function AddProductSreen() {
                                 color: "white",
                                 marginHorizontal: 20,
                             }}
-                            onPress={handleReset}
-                        />
-                        <Button
-                            title="Add Product"
-                            buttonStyle={{
-                                backgroundColor: "rgba(39, 39, 39, 1)",
-                            }}
-                            containerStyle={{
-                                marginVertical: 5,
-                            }}
-                            titleStyle={{
-                                color: "white",
-                                marginHorizontal: 20,
-                            }}
+                            onPress={handleUpdate}
                         />
                     </View>
                 </ScrollView>
@@ -200,4 +218,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default AddProductSreen;
+export default ProductDetailScreen;

@@ -7,7 +7,7 @@ import { globalStyles } from "../styles/global";
 class ListItem extends React.Component {
     goTo(item) {
         this.props.navigation.navigate("Product", {
-            item: item,
+            product: item,
         });
     }
 

@@ -6,7 +6,9 @@ export const Products = [
         datePurchase: "11/12/2022",
         dateExpired: "13/12/2022",
         description: "apple sillicon",
-        categories: "Fruits",
+        categories: "Drinks",
+        notification: true,
+        like: true,
     },
     {
         id: 2,
@@ -16,6 +18,8 @@ export const Products = [
         dateExpired: "13/12/2022",
         description: "apple sillicon",
         categories: "Fruits",
+        notification: true,
+        like: false,
     },
     {
         id: 3,
@@ -25,6 +29,8 @@ export const Products = [
         dateExpired: "13/12/2022",
         description: "apple sillicon",
         categories: "Fruits",
+        notification: true,
+        like: false,
     },
     {
         id: 4,
@@ -34,6 +40,8 @@ export const Products = [
         dateExpired: "13/12/2022",
         description: "apple sillicon",
         categories: "Fruits",
+        notification: true,
+        like: false,
     },
     {
         id: 5,
@@ -43,5 +51,7 @@ export const Products = [
         dateExpired: "13/12/2022",
         description: "apple sillicon",
         categories: "Fruits",
+        notification: true,
+        like: false,
     },
 ];

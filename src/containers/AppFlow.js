@@ -6,8 +6,6 @@ import { Icon } from "react-native-elements";
 
 import ScanBarCode from "../components/ScanBarCode";
 import HomeScreen from "../screens/HomeScreen";
-import ProductScreen from "../screens/ProductScreen";
-import HistoryScreen from "../screens/HistoryScreen";
 import FavoriteScreen from "../screens/FavoriteScreen";
 import ForgotPasswordScreen from "../screens/ForgotPasswordScreen";
 import LoginSreen from "../screens/LoginSreen";
@@ -15,6 +13,8 @@ import RegisterScreen from "../screens/RegisterScreen";
 import SettingSreen from "../screens/SettingSreen";
 import ProfileSreen from "../screens/ProfileSreen";
 import AddProductSreen from "../screens/AddProductSreen";
+import HistorycalScreen from "../screens/HistorycalScreen";
+import ProductDetailScreen from "../screens/ProductDetailScreen";
 import { isAuthenticated } from "../app/slices/auth";
 
 const Tab = createBottomTabNavigator();
@@ -24,7 +24,6 @@ function HomeStack() {
     return (
         <Stack.Navigator>
             <Stack.Screen name="Home" component={HomeScreen} />
-            <Stack.Screen name="Product" component={ProductScreen} />
         </Stack.Navigator>
     );
 }
@@ -32,15 +31,8 @@ function HomeStack() {
 function HistoryStack() {
     return (
         <Stack.Navigator>
-            <Stack.Screen name="History" component={HistoryScreen} />
-        </Stack.Navigator>
-    );
-}
-
-function FavoritesStack() {
-    return (
-        <Stack.Navigator>
-            <Stack.Screen name="Favorite" component={FavoriteScreen} />
+            <Stack.Screen name="History" component={HistorycalScreen} />
+            <Stack.Screen name="Product" component={ProductDetailScreen} />
         </Stack.Navigator>
     );
 }
@@ -49,6 +41,7 @@ function SettingStack() {
     return (
         <Stack.Navigator>
             <Stack.Screen name="Seeting" component={SettingSreen} />
+            <Stack.Screen name="Favorite" component={FavoriteScreen} />
             <Stack.Screen name="ProfileSreen" component={ProfileSreen} />
         </Stack.Navigator>
     );
@@ -87,14 +80,6 @@ function Home() {
                 options={{
                     tabBarLabel: "Add",
                     tabBarIcon: () => <Icon name="plus" type="antdesign" />,
-                }}
-            />
-            <Tab.Screen
-                name="Favorites"
-                component={FavoritesStack}
-                options={{
-                    tabBarLabel: "Favorites",
-                    tabBarIcon: () => <Icon name="heart" type="antdesign" />,
                 }}
             />
             <Tab.Screen
