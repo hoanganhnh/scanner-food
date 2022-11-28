@@ -1,8 +1,8 @@
 import React from "react";
 import { Text, View, StyleSheet, Image } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
+
 import { globalStyles } from "../styles/global";
-import { getColorScore } from "../styles/product";
 
 class ListItem extends React.Component {
     goTo(item) {
@@ -14,37 +14,32 @@ class ListItem extends React.Component {
     render() {
         return (
             <View style={styles.item}>
-                <TouchableOpacity onPress={() => this.goTo(this.props.item)}>
-                    <Text style={globalStyles.itemListTitle}>
-                        {this.props.item.product_name_en.toUpperCase()}
-                    </Text>
-                </TouchableOpacity>
-                <View>
+                <View style={styles.itemContainer}>
                     <Image
                         style={globalStyles.stretch}
                         source={{
-                            uri: this.props.item.image_thumb_url,
+                            uri: this.props.item.image,
                         }}
                     />
-                    <Text style={globalStyles.itemListRating}>
-                        {this.props.item.brands_tags}
-                    </Text>
-                    <Text
-                        style={[
-                            globalStyles.itemListRating,
-                            {
-                                color: getColorScore(
-                                    this.props.item.nutriscore_grade
-                                ),
-                            },
-                        ]}
-                    >
-                        La nutriScore est de {this.props.item.rev}/100
-                    </Text>
-                    <Text style={globalStyles.itemListRating}>Catégories:</Text>
-                    <Text style={globalStyles.itemListRating}>
-                        {this.props.item.categories}
-                    </Text>
+                    <View style={styles.contentItem}>
+                        <TouchableOpacity
+                            onPress={() => this.goTo(this.props.item)}
+                        >
+                            <Text style={globalStyles.itemListTitle}>
+                                {this.props.item.name.toUpperCase()}
+                            </Text>
+                        </TouchableOpacity>
+                        <Text style={globalStyles.itemListRating}>
+                            Time expiry: {this.props.item.datePurchase} {" - "}
+                            {this.props.item.dateExpired}
+                        </Text>
+                        <Text style={globalStyles.itemListRating}>
+                            Description: {this.props.item.description}
+                        </Text>
+                        <Text style={globalStyles.itemListRating}>
+                            Categories: {this.props.item.categories}
+                        </Text>
+                    </View>
                 </View>
             </View>
         );
@@ -53,11 +48,19 @@ class ListItem extends React.Component {
 
 const styles = StyleSheet.create({
     item: {
-        padding: 20,
+        padding: 10,
         marginVertical: 8,
         marginHorizontal: 16,
         borderBottomWidth: 1,
         borderBottomColor: "#1d1d1d",
+    },
+    itemContainer: {
+        flexDirection: "row",
+    },
+
+    contentItem: {
+        width: "100%",
+        marginLeft: 16,
     },
 });
 

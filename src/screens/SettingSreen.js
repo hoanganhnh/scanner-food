@@ -26,6 +26,18 @@ function SettingSreen({ navigation }) {
                         </ListItem.Content>
                         <ListItem.Chevron />
                     </ListItem>
+                    <ListItem
+                        onPress={() => {
+                            navigation.navigate("Favorite");
+                        }}
+                    >
+                        <ListItem.Content>
+                            <ListItem.Title>
+                                {"Favorites Product"}
+                            </ListItem.Title>
+                        </ListItem.Content>
+                        <ListItem.Chevron />
+                    </ListItem>
                     <Button
                         title="Log out"
                         buttonStyle={{
