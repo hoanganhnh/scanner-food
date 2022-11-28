@@ -6,21 +6,23 @@ import {
     Image,
     ScrollView,
     SafeAreaView,
+    Button,
+    Switch,
 } from "react-native";
-import { Icon } from "react-native-elements";
+import { Icon, Input } from "react-native-elements";
 import { SelectList } from "react-native-dropdown-select-list";
 import * as ImagePicker from "expo-image-picker";
+import { format } from "date-fns";
 
 import { ImageProductDefault } from "../components/Image";
 import { Device } from "../styles/values";
-import { TestDatePicker } from "./Test";
+import DatePicker from "../components/DatePicker";
 
-const data = [
-    { key: "1", value: "Mobiles", disabled: true },
-    { key: "2", value: "Appliances" },
-    { key: "3", value: "Cameras" },
-    { key: "4", value: "Computers", disabled: true },
-    { key: "5", value: "Vegetables" },
+const classificationData = [
+    { key: "1", value: "Fruits" },
+    { key: "2", value: "Vegetables" },
+    { key: "3", value: "Graints" },
+    { key: "4", value: "Protetin Foods" },
     { key: "6", value: "Diary Products" },
     { key: "7", value: "Drinks" },
 ];
@@ -28,10 +30,14 @@ const data = [
 function AddProductSreen() {
     const [image, setImage] = React.useState(null);
     const [classification, setClassification] = React.useState([]);
+    const [datePurchase, setDatePurchase] = React.useState("");
+    const [dateExpired, setDateExpired] = React.useState("");
+    const [nameProduct, setNameProduct] = React.useState("");
+    const [isNotification, setIsNotification] = React.useState(false);
 
     const pickImage = async () => {
         try {
-            let result = await ImagePicker.launchImageLibraryAsync({
+            const result = await ImagePicker.launchImageLibraryAsync({
                 mediaTypes: ImagePicker.MediaTypeOptions.Images,
                 allowsEditing: true,
                 aspect: [4, 3],
@@ -46,6 +52,22 @@ function AddProductSreen() {
         }
     };
 
+    const handleChangeNameProduct = (value) => {
+        setNameProduct(value);
+    };
+
+    const handleChangeNotification = () => {
+        setIsNotification(!isNotification);
+    };
+
+    const handleReset = () => {
+        setDatePurchase("");
+        setDateExpired("");
+        setNameProduct("");
+        setIsNotification(false);
+        setImage(null);
+    };
+
     return (
         <View style={styles.wrapper}>
             <SafeAreaView>
@@ -56,7 +78,7 @@ function AddProductSreen() {
                     />
                     <View style={styles.container}>
                         <Text style={{ fontSize: 16, marginVertical: 12 }}>
-                            Get image product
+                            Get image product:
                         </Text>
                         <View style={styles.iconContainer}>
                             <Text style={styles.icon}>
@@ -75,6 +97,14 @@ function AddProductSreen() {
                                 />
                             </Text>
                         </View>
+                        <Text style={{ fontSize: 16, marginVertical: 12 }}>
+                            Name product:
+                        </Text>
+                        <Input
+                            value={nameProduct}
+                            onChangeText={handleChangeNameProduct}
+                            placeholder="Name product..."
+                        />
                         <View
                             style={{
                                 flexDirection: "row",
@@ -82,13 +112,12 @@ function AddProductSreen() {
                             }}
                         >
                             <Text style={{ fontSize: 16, marginVertical: 12 }}>
-                                Purchase date:
+                                Purchase date:{" "}
+                                {datePurchase
+                                    ? format(datePurchase, "dd/MM/yyyy")
+                                    : ""}
                             </Text>
-                            <Icon
-                                name="calendar"
-                                type="font-awesome"
-                                size={30}
-                            />
+                            <DatePicker getDate={setDatePurchase} />
                         </View>
                         <View
                             style={{
@@ -98,19 +127,18 @@ function AddProductSreen() {
                             }}
                         >
                             <Text style={{ fontSize: 16, marginVertical: 12 }}>
-                                Expired date:
+                                Expired date:{" "}
+                                {dateExpired
+                                    ? format(dateExpired, "dd/MM/yyyy")
+                                    : ""}
                             </Text>
-                            <Icon
-                                name="calendar"
-                                type="font-awesome"
-                                size={30}
-                            />
+                            <DatePicker getDate={setDateExpired} />
                         </View>
                         <SelectList
                             setSelected={(val) => setClassification(val)}
-                            data={data}
+                            data={classificationData}
                             save="value"
-                            onSelect={() => alert(classification)}
+                            onSelect={() => console.log(classification)}
                             placeholder="Classification"
                         />
                         <View
@@ -123,14 +151,13 @@ function AddProductSreen() {
                             <Text style={{ fontSize: 16, marginVertical: 12 }}>
                                 Notification:
                             </Text>
-                            <Icon
-                                name="calendar"
-                                type="font-awesome"
-                                size={30}
+                            <Switch
+                                value={isNotification}
+                                onChange={handleChangeNotification}
                             />
                         </View>
+                        <Button title="Reset" onPress={handleReset} />
                     </View>
-                    <TestDatePicker />
                 </ScrollView>
             </SafeAreaView>
         </View>
