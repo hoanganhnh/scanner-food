@@ -1,8 +1,10 @@
-import React from "react";
+import * as React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
+import { NavigationContainer } from "@react-navigation/native";
 import { useSelector } from "react-redux";
 import { Icon } from "react-native-elements";
+import * as Notifications from "expo-notifications";
 
 import ScanBarCode from "../components/ScanBarCode";
 import HomeScreen from "../screens/HomeScreen";
@@ -16,6 +18,8 @@ import AddProductSreen from "../screens/AddProductSreen";
 import HistorycalScreen from "../screens/HistorycalScreen";
 import ProductDetailScreen from "../screens/ProductDetailScreen";
 import { isAuthenticated } from "../app/slices/auth";
+import { useNotifications } from "../hooks/useNotifications";
+import LinkingConfiguration from "./LinkingConfiguration";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -23,7 +27,11 @@ const Stack = createStackNavigator();
 function HomeStack() {
     return (
         <Stack.Navigator>
-            <Stack.Screen name="Home" component={HomeScreen} />
+            <Stack.Screen
+                options={{ headerShown: false }}
+                name="Home"
+                component={HomeScreen}
+            />
         </Stack.Navigator>
     );
 }
@@ -50,7 +58,7 @@ function SettingStack() {
 function AddNewProductStack() {
     return (
         <Stack.Navigator>
-            <Stack.Screen name="Add New Product" component={AddProductSreen} />
+            <Stack.Screen name="AddNewProduct" component={AddProductSreen} />
         </Stack.Navigator>
     );
 }
@@ -105,29 +113,53 @@ function Home() {
 
 export default function AppFlow() {
     const isLogin = useSelector(isAuthenticated);
+    const { registerForPushNotificationsAsync, handleNotificationResponse } =
+        useNotifications();
+    React.useEffect(() => {
+        registerForPushNotificationsAsync();
+        Notifications.setNotificationHandler({
+            handleNotification: async () => ({
+                shouldShowAlert: true,
+                shouldPlaySound: true,
+                shouldSetBadge: false,
+            }),
+        });
+        const responseListener =
+            Notifications.addNotificationResponseReceivedListener(
+                handleNotificationResponse
+            );
+
+        return () => {
+            if (responseListener) {
+                Notifications.removeNotificationSubscription(responseListener);
+            }
+        };
+    }, []);
+
     return (
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
-            {isLogin ? (
-                <Stack.Group>
-                    <Stack.Screen
-                        options={{ headerShown: false }}
-                        name="Home"
-                        component={Home}
-                    />
-                </Stack.Group>
-            ) : (
-                <Stack.Group>
-                    <Stack.Screen name="LoginSreen" component={LoginSreen} />
-                    <Stack.Screen
-                        name="RegisterScreen"
-                        component={RegisterScreen}
-                    />
-                    <Stack.Screen
-                        name="ForgotPasswordScreen"
-                        component={ForgotPasswordScreen}
-                    />
-                </Stack.Group>
-            )}
-        </Stack.Navigator>
+        <NavigationContainer linking={LinkingConfiguration} independent>
+            <Stack.Navigator screenOptions={{ headerShown: false }}>
+                {isLogin ? (
+                    <Stack.Group>
+                        <Stack.Screen name="Home" component={Home} />
+                    </Stack.Group>
+                ) : (
+                    <Stack.Group>
+                        <Stack.Screen
+                            name="LoginSreen"
+                            component={LoginSreen}
+                        />
+                        <Stack.Screen
+                            name="RegisterScreen"
+                            component={RegisterScreen}
+                        />
+                        <Stack.Screen
+                            name="ForgotPasswordScreen"
+                            component={ForgotPasswordScreen}
+                        />
+                    </Stack.Group>
+                )}
+            </Stack.Navigator>
+        </NavigationContainer>
     );
 }

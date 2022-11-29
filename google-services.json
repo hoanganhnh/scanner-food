@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1020178314923",
+    "project_id": "bestbefore-54e35",
+    "storage_bucket": "bestbefore-54e35.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1020178314923:android:bb5a2b637e4e1f472329ee",
+        "android_client_info": {
+          "package_name": "com.hoanganh.bestbefore"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1020178314923-1eapct6c9lq3v4eignsrmkm9lvgk5ne3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyABo1Jqdmnn1daAnovxNHQ0FjCWz84wVvI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1020178314923-1eapct6c9lq3v4eignsrmkm9lvgk5ne3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

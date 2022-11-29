@@ -6,6 +6,7 @@
         "orientation": "portrait",
         "icon": "./assets/icon.png",
         "userInterfaceStyle": "automatic",
+        "scheme": "com.hoanganh.bestbefore",
         "splash": {
             "image": "./assets/splash.png",
             "resizeMode": "contain",
@@ -15,8 +16,17 @@
             "fallbackToCacheTimeout": 0
         },
         "assetBundlePatterns": ["**/*"],
+        "android": {
+            "googleServicesFile": "./google-services.json",
+            "package": "com.hoanganh.bestbefore",
+            "adaptiveIcon": {
+                "foregroundImage": "./assets/favicon.png",
+                "backgroundColor": "#ffffff"
+            }
+        },
         "ios": {
-            "supportsTablet": true
+            "supportsTablet": true,
+            "package": "com.hoanganh.bestbefore"
         },
         "web": {
             "favicon": "./assets/favicon.png"
