@@ -40,7 +40,11 @@ function HistoryStack() {
     return (
         <Stack.Navigator>
             <Stack.Screen name="History" component={HistorycalScreen} />
-            <Stack.Screen name="Product" component={ProductDetailScreen} />
+            <Stack.Screen
+                options={{ headerShown: false }}
+                name="Product"
+                component={ProductDetailScreen}
+            />
         </Stack.Navigator>
     );
 }
@@ -58,7 +62,11 @@ function SettingStack() {
 function AddNewProductStack() {
     return (
         <Stack.Navigator>
-            <Stack.Screen name="AddNewProduct" component={AddProductSreen} />
+            <Stack.Screen
+                options={{ headerShown: false }}
+                name="AddNewProduct"
+                component={AddProductSreen}
+            />
         </Stack.Navigator>
     );
 }

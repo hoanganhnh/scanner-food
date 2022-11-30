@@ -60,6 +60,19 @@ const authSlice = createSlice({
             state.auth = null;
             state.isLoading = false;
         });
+
+        builder.addCase(register.fulfilled, (state, action) => {
+            state.auth = action.payload;
+            state.isLoading = false;
+        });
+        builder.addCase(register.pending, (state) => {
+            state.isLoading = true;
+        });
+
+        builder.addCase(register.rejected, (state) => {
+            state.auth = null;
+            state.isLoading = false;
+        });
     },
 });
 

@@ -25,8 +25,7 @@
             }
         },
         "ios": {
-            "supportsTablet": true,
-            "package": "com.hoanganh.bestbefore"
+            "supportsTablet": true
         },
         "web": {
             "favicon": "./assets/favicon.png"

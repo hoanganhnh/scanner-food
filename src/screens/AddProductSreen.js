@@ -6,25 +6,35 @@ import {
     Image,
     ScrollView,
     SafeAreaView,
-    Switch,
 } from "react-native";
 import { Icon, Input, Button } from "react-native-elements";
 import { SelectList } from "react-native-dropdown-select-list";
 import * as ImagePicker from "expo-image-picker";
+import { useDispatch, useSelector } from "react-redux";
 import { format } from "date-fns";
 
 import { ImageProductDefault } from "../components/Image";
 import { classificationData } from "../constants/classifications";
 import { Device } from "../styles/values";
+import { selectAuth } from "../app/slices/auth";
+import { toggleLoading } from "../app/slices/loading";
+import { useNavigation } from "@react-navigation/native";
 import DatePicker from "../components/DatePicker";
+import axiosClient from "../services/axiosClient";
 
+// @TODO: validate
 function AddProductSreen() {
     const [image, setImage] = React.useState(null);
+    const [file, setFile] = React.useState({});
     const [classification, setClassification] = React.useState([]);
     const [datePurchase, setDatePurchase] = React.useState("");
     const [dateExpired, setDateExpired] = React.useState("");
     const [nameProduct, setNameProduct] = React.useState("");
-    const [isNotification, setIsNotification] = React.useState(false);
+    const [bestBeforeDay, setBestBeforeDay] = React.useState("0");
+
+    const { auth } = useSelector(selectAuth);
+    const dispatch = useDispatch();
+    const navigation = useNavigation();
 
     const pickImage = async () => {
         try {
@@ -34,8 +44,14 @@ function AddProductSreen() {
                 aspect: [4, 3],
                 quality: 1,
             });
-
+            setFile(result);
             if (!result.canceled) {
+                const localUri = result.uri;
+                const filename = localUri.split("/").pop();
+                // Infer the type of the image
+                const match = /\.(\w+)$/.exec(filename);
+                const type = match ? `image/${match[1]}` : `image`;
+                setFile({ uri: localUri, name: filename, type });
                 setImage(result.uri);
             }
         } catch (error) {
@@ -47,16 +63,54 @@ function AddProductSreen() {
         setNameProduct(value);
     };
 
-    const handleChangeNotification = () => {
-        setIsNotification(!isNotification);
+    const handleBestBeforeDay = (value) => {
+        const day = value.replace(/[^0-9]/g, "");
+        setBestBeforeDay(day);
     };
 
     const handleReset = () => {
         setDatePurchase("");
         setDateExpired("");
         setNameProduct("");
-        setIsNotification(false);
         setImage(null);
+        setBestBeforeDay("0");
+    };
+
+    const handleAddNewProduct = async () => {
+        dispatch(toggleLoading(true));
+        try {
+            const data = {};
+            data["name"] = nameProduct;
+            data["expireDate"] = format(dateExpired, "yyyy-MM-dd");
+            data["purchaseDate"] = format(datePurchase, "yyyy-MM-dd");
+            data["bestBeforeDay"] = Number(bestBeforeDay);
+            data["classification"] = classification;
+            data["userId"] = auth.id;
+
+            const formdata = new FormData();
+            formdata.append("data", JSON.stringify(data));
+            formdata.append("files.image", file);
+            const res = await axiosClient.post("products", formdata, {
+                headers: {
+                    Accept: "application/json",
+                    "Content-Type": "multipart/form-data",
+                },
+            });
+
+            if (res.status === 200) {
+                data["image"] = image;
+                navigation.navigate("HistoryStack", {
+                    screen: "Product",
+                    params: {
+                        product: data,
+                    },
+                });
+            }
+        } catch (error) {
+            dispatch(toggleLoading(false));
+            console.log("error", error);
+        }
+        dispatch(toggleLoading(false));
     };
 
     return (
@@ -140,11 +194,12 @@ function AddProductSreen() {
                             }}
                         >
                             <Text style={{ fontSize: 16, marginVertical: 12 }}>
-                                Notification:
+                                Notification best before:
                             </Text>
-                            <Switch
-                                value={isNotification}
-                                onChange={handleChangeNotification}
+                            <Input
+                                onChangeText={handleBestBeforeDay}
+                                value={bestBeforeDay}
+                                maxLength={10}
                             />
                         </View>
                         <Button
@@ -173,6 +228,7 @@ function AddProductSreen() {
                                 color: "white",
                                 marginHorizontal: 20,
                             }}
+                            onPress={handleAddNewProduct}
                         />
                     </View>
                 </ScrollView>
