@@ -7,7 +7,6 @@ import {
     Image,
     StyleSheet,
     TouchableOpacity,
-    Switch,
 } from "react-native";
 import { Icon, Input, Button } from "react-native-elements";
 import * as ImagePicker from "expo-image-picker";
@@ -26,8 +25,8 @@ function ProductDetailScreen({ route }) {
     const [datePurchase, setDatePurchase] = React.useState("");
     const [dateExpired, setDateExpired] = React.useState("");
     const [nameProduct, setNameProduct] = React.useState("");
-    const [isNotification, setIsNotification] = React.useState(
-        product.notification
+    const [bestBeforeDay, setBestBeforeDay] = React.useState(
+        `${product.bestBeforeDay}`
     );
     const [favorite, setFavorite] = React.useState(product.like);
 
@@ -52,8 +51,9 @@ function ProductDetailScreen({ route }) {
         setNameProduct(value);
     };
 
-    const handleChangeNotification = () => {
-        setIsNotification(!isNotification);
+    const handleBestBeforeDay = (value) => {
+        const day = value.replace(/[^0-9]/g, "");
+        setBestBeforeDay(day);
     };
 
     const handleFavorite = () => {
@@ -111,7 +111,7 @@ function ProductDetailScreen({ route }) {
                                 Purchase date:{" "}
                                 {datePurchase
                                     ? format(datePurchase, "dd/MM/yyyy")
-                                    : product.datePurchase}
+                                    : product.purchaseDate}
                             </Text>
                             <DatePicker getDate={setDatePurchase} />
                         </View>
@@ -126,7 +126,7 @@ function ProductDetailScreen({ route }) {
                                 Expired date:{" "}
                                 {dateExpired
                                     ? format(dateExpired, "dd/MM/yyyy")
-                                    : product.dateExpired}
+                                    : product.expireDate}
                             </Text>
                             <DatePicker getDate={setDateExpired} />
                         </View>
@@ -148,11 +148,12 @@ function ProductDetailScreen({ route }) {
                             }}
                         >
                             <Text style={{ fontSize: 16, marginVertical: 12 }}>
-                                Notification:
+                                Notification best before:
                             </Text>
-                            <Switch
-                                value={isNotification}
-                                onChange={handleChangeNotification}
+                            <Input
+                                onChangeText={handleBestBeforeDay}
+                                value={bestBeforeDay}
+                                maxLength={10}
                             />
                         </View>
                         <View

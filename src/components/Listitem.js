@@ -30,14 +30,11 @@ class ListItem extends React.Component {
                             </Text>
                         </TouchableOpacity>
                         <Text style={globalStyles.itemListRating}>
-                            Time expiry: {this.props.item.datePurchase} {" - "}
-                            {this.props.item.dateExpired}
+                            Time expiry: {this.props.item.purchaseDate} {" - "}
+                            {this.props.item.expireDate}
                         </Text>
                         <Text style={globalStyles.itemListRating}>
-                            Description: {this.props.item.description}
-                        </Text>
-                        <Text style={globalStyles.itemListRating}>
-                            Categories: {this.props.item.categories}
+                            Categories: {this.props.item.classification}
                         </Text>
                     </View>
                 </View>
