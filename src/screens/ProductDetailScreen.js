@@ -174,7 +174,7 @@ function ProductDetailScreen({ route, navigation }) {
                             onSelect={() => console.log(classification)}
                             placeholder="Classification"
                             defaultOption={classificationData.find(
-                                (item) => item.value === product.categories
+                                (item) => item.value === product.classification
                             )}
                         />
                         <View
