@@ -6,10 +6,12 @@ import {
     Image,
     ScrollView,
     SafeAreaView,
+    Alert,
 } from "react-native";
 import { Icon, Input, Button } from "react-native-elements";
 import { SelectList } from "react-native-dropdown-select-list";
 import * as ImagePicker from "expo-image-picker";
+import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
 import { format } from "date-fns";
 
@@ -18,7 +20,6 @@ import { classificationData } from "../constants/classifications";
 import { Device } from "../styles/values";
 import { selectAuth } from "../app/slices/auth";
 import { toggleLoading } from "../app/slices/loading";
-import { useNavigation } from "@react-navigation/native";
 import DatePicker from "../components/DatePicker";
 import axiosClient from "../services/axiosClient";
 
@@ -105,10 +106,12 @@ function AddProductSreen() {
                         product: data,
                     },
                 });
+                handleReset();
             }
         } catch (error) {
             dispatch(toggleLoading(false));
             console.log("error", error);
+            Alert.alert("Add  product error !");
         }
         dispatch(toggleLoading(false));
     };

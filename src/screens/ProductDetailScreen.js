@@ -7,17 +7,19 @@ import {
     Image,
     StyleSheet,
     TouchableOpacity,
+    Alert,
 } from "react-native";
 import { Icon, Input, Button } from "react-native-elements";
 import * as ImagePicker from "expo-image-picker";
 import { SelectList } from "react-native-dropdown-select-list";
+import { format } from "date-fns";
 
 import { Device } from "../styles/values";
-import { format } from "date-fns";
 import { classificationData } from "../constants/classifications";
 import DatePicker from "../components/DatePicker";
+import axiosClient from "../services/axiosClient";
 
-function ProductDetailScreen({ route }) {
+function ProductDetailScreen({ route, navigation }) {
     const { product } = route.params;
 
     const [image, setImage] = React.useState(null);
@@ -62,6 +64,41 @@ function ProductDetailScreen({ route }) {
 
     const handleUpdate = () => {
         console.log("update");
+    };
+
+    const handleDeleteProduct = () => {
+        Alert.alert(
+            "Delete products",
+            "Are you sure you want to delete?",
+            [
+                {
+                    text: "Ok",
+                    onPress: async () => {
+                        console.log("delete product id", product.id);
+                        try {
+                            const res = await axiosClient.delete(
+                                `products/${product.id}`
+                            );
+
+                            if (res.status == 200) {
+                                console.log("delete successfull");
+                                navigation.goBack();
+                            }
+                        } catch (error) {
+                            Alert.alert("Delete product error !");
+                            console.log(error);
+                        }
+                    },
+                },
+                {
+                    text: "Cancel",
+                    style: "cancel",
+                },
+            ],
+            {
+                cancelable: true,
+            }
+        );
     };
 
     return (
@@ -192,6 +229,20 @@ function ProductDetailScreen({ route }) {
                                 marginHorizontal: 20,
                             }}
                             onPress={handleUpdate}
+                        />
+                        <Button
+                            title="Delete"
+                            buttonStyle={{
+                                backgroundColor: "rgba(39, 39, 39, 1)",
+                            }}
+                            containerStyle={{
+                                marginVertical: 5,
+                            }}
+                            titleStyle={{
+                                color: "white",
+                                marginHorizontal: 20,
+                            }}
+                            onPress={handleDeleteProduct}
                         />
                     </View>
                 </ScrollView>
