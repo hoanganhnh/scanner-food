@@ -2,6 +2,7 @@ import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
 import { Alert, Platform } from "react-native";
 import { openSettings, openURL } from "expo-linking";
+import { storeData } from "../utils/async-storage";
 
 export const useNotifications = () => {
     const registerForPushNotificationsAsync = async (alertUser) => {
@@ -34,7 +35,8 @@ export const useNotifications = () => {
                 throw new Error("User doesn't allow for notifications");
             }
             const token = (await Notifications.getExpoPushTokenAsync()).data;
-            console.log(token);
+            console.log("token-device -->", token);
+            await storeData("TOKEN_DEIVCE", token);
         } else {
             alert("Must use physical device for Push Notifications");
         }

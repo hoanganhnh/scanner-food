@@ -19,6 +19,8 @@ import { CommonText } from "../components/common/CommonText";
 import { FontSize, FontWithBold, Spacing } from "../styles/spacing";
 import { toggleLoading } from "../app/slices/loading";
 import { Device } from "../styles/values";
+import axiosClient from "../services/axiosClient";
+import { getData } from "../utils/async-storage";
 
 // @TODO: handle validate
 function LoginSreen({ navigation }) {
@@ -50,6 +52,8 @@ function LoginSreen({ navigation }) {
                 const { jwt, user } = unwrapResult(result);
                 dispath(setToken(jwt));
                 dispath(setAuth(user));
+                const data = await getData("TOKEN_DEIVCE");
+                await handleSaveTokenDevice(data, user.id);
             } catch (err) {
                 console.log(err);
                 dispath(toggleLoading(false));
@@ -65,6 +69,30 @@ function LoginSreen({ navigation }) {
     };
     const registerNavigate = () => {
         navigation.navigate("RegisterScreen");
+    };
+
+    const handleSaveTokenDevice = async (token, userId) => {
+        try {
+            const existToken = await axiosClient.get(
+                `token-devices?filters[userId][$eq]=${userId}`
+            );
+
+            if (!existToken.data) {
+                const res = await axiosClient.post("token-devices", {
+                    data: {
+                        token,
+                        userId,
+                    },
+                });
+                if (res.status === 200) {
+                    console.log("save token device successfull");
+                }
+            } else {
+                console.log("token device existed");
+            }
+        } catch (error) {
+            console.log(error);
+        }
     };
 
     return (

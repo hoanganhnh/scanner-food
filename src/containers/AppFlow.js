@@ -121,10 +121,11 @@ function Home() {
 
 export default function AppFlow() {
     const isLogin = useSelector(isAuthenticated);
+
     const { registerForPushNotificationsAsync, handleNotificationResponse } =
         useNotifications();
     React.useEffect(() => {
-        registerForPushNotificationsAsync();
+        registerForPushNotificationsAsync(true);
         Notifications.setNotificationHandler({
             handleNotification: async () => ({
                 shouldShowAlert: true,
