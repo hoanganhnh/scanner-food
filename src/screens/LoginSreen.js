@@ -73,11 +73,11 @@ function LoginSreen({ navigation }) {
 
     const handleSaveTokenDevice = async (token, userId) => {
         try {
-            const existToken = await axiosClient.get(
+            const { data } = await axiosClient.get(
                 `token-devices?filters[userId][$eq]=${userId}`
             );
-
-            if (!existToken.data) {
+            const existToken = await getData("TOKEN_DEIVCE");
+            if (data.data[0].attributes.token !== existToken) {
                 const res = await axiosClient.post("token-devices", {
                     data: {
                         token,
