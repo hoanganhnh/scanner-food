@@ -7,13 +7,14 @@ import {
     ScrollView,
     SafeAreaView,
     Alert,
+    LogBox,
 } from "react-native";
 import { Icon, Input, Button } from "react-native-elements";
 import { SelectList } from "react-native-dropdown-select-list";
 import * as ImagePicker from "expo-image-picker";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
-import { format } from "date-fns";
+import { differenceInSeconds, format, isAfter, isBefore } from "date-fns";
 
 import { ImageProductDefault } from "../components/Image";
 import { classificationData } from "../constants/classifications";
@@ -23,15 +24,18 @@ import { toggleLoading } from "../app/slices/loading";
 import DatePicker from "../components/DatePicker";
 import axiosClient from "../services/axiosClient";
 
-// @TODO: validate
+LogBox.ignoreLogs([
+    "Non-serializable values were found in the navigation state",
+]);
+
 function AddProductSreen() {
     const [image, setImage] = React.useState(null);
     const [file, setFile] = React.useState({});
-    const [classification, setClassification] = React.useState([]);
-    const [datePurchase, setDatePurchase] = React.useState("");
-    const [dateExpired, setDateExpired] = React.useState("");
+    const [classification, setClassification] = React.useState("");
+    const [purchaseDate, setPurchaseDate] = React.useState("");
+    const [expiredDate, setExpiredDate] = React.useState("");
     const [nameProduct, setNameProduct] = React.useState("");
-    const [bestBeforeDay, setBestBeforeDay] = React.useState("0");
+    const [bestBeforeDay, setBestBeforeDay] = React.useState("");
 
     const { auth } = useSelector(selectAuth);
     const dispatch = useDispatch();
@@ -64,29 +68,67 @@ function AddProductSreen() {
         setNameProduct(value);
     };
 
-    const handleBestBeforeDay = (value) => {
-        const day = value.replace(/[^0-9]/g, "");
-        setBestBeforeDay(day);
-    };
-
     const handleReset = () => {
-        setDatePurchase("");
-        setDateExpired("");
+        setPurchaseDate("");
+        setExpiredDate("");
         setNameProduct("");
+        setBestBeforeDay("");
         setImage(null);
-        setBestBeforeDay("0");
     };
 
     const handleAddNewProduct = async () => {
-        dispatch(toggleLoading(true));
         try {
+            if (!file?.uri) {
+                Alert.alert("Image is require!");
+                return;
+            }
+            if (!nameProduct) {
+                Alert.alert("Name product is require!");
+                return;
+            }
+            if (!purchaseDate) {
+                Alert.alert("Purchase date product is require!");
+                return;
+            }
+            if (!expiredDate) {
+                Alert.alert("Expire date product is require!");
+                return;
+            }
+            const diff = differenceInSeconds(
+                new Date(expiredDate),
+                new Date(purchaseDate)
+            );
+            if (diff < 0) {
+                Alert.alert("Error set time expire date !");
+                return;
+            }
+
+            if (!bestBeforeDay) {
+                Alert.alert("Expire date product is require!");
+                return;
+            }
+
+            if (isBefore(new Date(bestBeforeDay), new Date(purchaseDate))) {
+                Alert.alert("Best before day must after purchase date !");
+                return;
+            }
+            if (isAfter(new Date(bestBeforeDay), new Date(expiredDate))) {
+                Alert.alert("Best before day must previous expire date !");
+                return;
+            }
+            if (!classification) {
+                Alert.alert("Classification product is require!");
+                return;
+            }
             const data = {};
             data["name"] = nameProduct;
-            data["expireDate"] = format(dateExpired, "yyyy-MM-dd");
-            data["purchaseDate"] = format(datePurchase, "yyyy-MM-dd");
-            data["bestBeforeDay"] = Number(bestBeforeDay);
+            data["expireDate"] = format(expiredDate, "yyyy-MM-dd");
+            data["purchaseDate"] = format(purchaseDate, "yyyy-MM-dd");
+            data["bestBeforeDay"] = bestBeforeDay;
             data["classification"] = classification;
             data["userId"] = auth.id;
+            data["like"] = false;
+            dispatch(toggleLoading(true));
 
             const formdata = new FormData();
             formdata.append("data", JSON.stringify(data));
@@ -111,7 +153,7 @@ function AddProductSreen() {
         } catch (error) {
             dispatch(toggleLoading(false));
             console.log("error", error);
-            Alert.alert("Add  product error !");
+            Alert.alert("Add product error !");
         }
         dispatch(toggleLoading(false));
     };
@@ -161,11 +203,11 @@ function AddProductSreen() {
                         >
                             <Text style={{ fontSize: 16, marginVertical: 12 }}>
                                 Purchase date:{" "}
-                                {datePurchase
-                                    ? format(datePurchase, "dd/MM/yyyy")
+                                {purchaseDate
+                                    ? format(purchaseDate, "dd/MM/yyyy")
                                     : ""}
                             </Text>
-                            <DatePicker getDate={setDatePurchase} />
+                            <DatePicker getDate={setPurchaseDate} />
                         </View>
                         <View
                             style={{
@@ -176,11 +218,11 @@ function AddProductSreen() {
                         >
                             <Text style={{ fontSize: 16, marginVertical: 12 }}>
                                 Expired date:{" "}
-                                {dateExpired
-                                    ? format(dateExpired, "dd/MM/yyyy")
+                                {expiredDate
+                                    ? format(expiredDate, "dd/MM/yyyy")
                                     : ""}
                             </Text>
-                            <DatePicker getDate={setDateExpired} />
+                            <DatePicker getDate={setExpiredDate} />
                         </View>
                         <SelectList
                             setSelected={(val) => setClassification(val)}
@@ -197,12 +239,17 @@ function AddProductSreen() {
                             }}
                         >
                             <Text style={{ fontSize: 16, marginVertical: 12 }}>
-                                Notification best before:
+                                Best before:{" "}
+                                {bestBeforeDay
+                                    ? format(
+                                          bestBeforeDay,
+                                          "dd/MM/yyyy - HH:mm:ss"
+                                      )
+                                    : ""}
                             </Text>
-                            <Input
-                                onChangeText={handleBestBeforeDay}
-                                value={bestBeforeDay}
-                                maxLength={10}
+                            <DatePicker
+                                getDate={setBestBeforeDay}
+                                mode="datetime"
                             />
                         </View>
                         <Button

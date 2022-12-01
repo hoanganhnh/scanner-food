@@ -3,7 +3,7 @@ import { View } from "react-native";
 import { Icon } from "react-native-elements";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 
-function DatePicker({ getDate }) {
+function DatePicker({ getDate, mode = "date" }) {
     const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
 
     const showDatePicker = () => {
@@ -29,7 +29,7 @@ function DatePicker({ getDate }) {
             />
             <DateTimePickerModal
                 isVisible={isDatePickerVisible}
-                mode="date"
+                mode={mode}
                 onConfirm={handleConfirm}
                 onCancel={hideDatePicker}
             />

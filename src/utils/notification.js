@@ -11,12 +11,16 @@ export async function schedulePushNotification() {
     return identifier;
 }
 
-export async function scheduleAndCancel() {
-    const identifier = await Notifications.scheduleNotificationAsync({
-        content: {
-            title: "Hey!",
-        },
-        trigger: { seconds: 60, repeats: true },
-    });
-    await Notifications.cancelScheduledNotificationAsync(identifier);
+export async function scheduleAndCancel(date) {
+    try {
+        const identifier = await Notifications.scheduleNotificationAsync({
+            content: {
+                title: "Hey!",
+            },
+            trigger: { date: new Date(date) },
+        });
+        await Notifications.cancelScheduledNotificationAsync(identifier);
+    } catch (error) {
+        console.log(error);
+    }
 }

@@ -22,13 +22,15 @@ import axiosClient from "../services/axiosClient";
 function ProductDetailScreen({ route, navigation }) {
     const { product } = route.params;
 
-    const [image, setImage] = React.useState(null);
-    const [classification, setClassification] = React.useState([]);
-    const [datePurchase, setDatePurchase] = React.useState("");
-    const [dateExpired, setDateExpired] = React.useState("");
-    const [nameProduct, setNameProduct] = React.useState("");
+    const [image, setImage] = React.useState(product.image);
+    const [classification, setClassification] = React.useState(
+        product.classification
+    );
+    const [purchaseDate, setPurchaseDate] = React.useState("");
+    const [expiredDate, setExpiredDate] = React.useState("");
+    const [nameProduct, setNameProduct] = React.useState(product.name);
     const [bestBeforeDay, setBestBeforeDay] = React.useState(
-        `${product.bestBeforeDay}`
+        new Date(product.bestBeforeDay)
     );
     const [favorite, setFavorite] = React.useState(product.like);
 
@@ -51,11 +53,6 @@ function ProductDetailScreen({ route, navigation }) {
 
     const handleChangeNameProduct = (value) => {
         setNameProduct(value);
-    };
-
-    const handleBestBeforeDay = (value) => {
-        const day = value.replace(/[^0-9]/g, "");
-        setBestBeforeDay(day);
     };
 
     const handleFavorite = () => {
@@ -146,11 +143,11 @@ function ProductDetailScreen({ route, navigation }) {
                         >
                             <Text style={{ fontSize: 16, marginVertical: 12 }}>
                                 Purchase date:{" "}
-                                {datePurchase
-                                    ? format(datePurchase, "dd/MM/yyyy")
+                                {purchaseDate
+                                    ? format(purchaseDate, "dd/MM/yyyy")
                                     : product.purchaseDate}
                             </Text>
-                            <DatePicker getDate={setDatePurchase} />
+                            <DatePicker getDate={setPurchaseDate} mode="date" />
                         </View>
                         <View
                             style={{
@@ -161,11 +158,11 @@ function ProductDetailScreen({ route, navigation }) {
                         >
                             <Text style={{ fontSize: 16, marginVertical: 12 }}>
                                 Expired date:{" "}
-                                {dateExpired
-                                    ? format(dateExpired, "dd/MM/yyyy")
+                                {expiredDate
+                                    ? format(expiredDate, "dd/MM/yyyy")
                                     : product.expireDate}
                             </Text>
-                            <DatePicker getDate={setDateExpired} />
+                            <DatePicker getDate={setExpiredDate} mode="date" />
                         </View>
                         <SelectList
                             setSelected={(val) => setClassification(val)}
@@ -185,12 +182,17 @@ function ProductDetailScreen({ route, navigation }) {
                             }}
                         >
                             <Text style={{ fontSize: 16, marginVertical: 12 }}>
-                                Notification best before:
+                                Best before:{" "}
+                                {bestBeforeDay
+                                    ? format(
+                                          bestBeforeDay,
+                                          "dd/MM/yyyy - HH:mm:ss"
+                                      )
+                                    : ""}
                             </Text>
-                            <Input
-                                onChangeText={handleBestBeforeDay}
-                                value={bestBeforeDay}
-                                maxLength={10}
+                            <DatePicker
+                                getDate={setBestBeforeDay}
+                                mode="datetime"
                             />
                         </View>
                         <View

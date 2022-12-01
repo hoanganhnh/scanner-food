@@ -1,6 +1,7 @@
 import React from "react";
 import { View, FlatList } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
+import { useFocusEffect } from "@react-navigation/native";
 import { Button } from "react-native-elements";
 
 import ListItem from "../components/Listitem";
@@ -16,42 +17,38 @@ function HistorycalScreen({ navigation }) {
     const dispatch = useDispatch();
     const { auth } = useSelector(selectAuth);
 
-    React.useEffect(() => {
-        const getMyProducts = async () => {
-            try {
-                const res = await axiosClient.get(
-                    `products?filters[userId][$eq]=${auth.id}&populate=image`
-                );
-                if (res.status == 200) {
-                    const _products = res.data.data.map((item) => ({
-                        id: item.id,
-                        name: item.attributes.name,
-                        purchaseDate: convertToddMMYYY(
-                            item.attributes.purchaseDate
-                        ),
-                        expireDate: convertToddMMYYY(
-                            item.attributes.expireDate
-                        ),
-                        classification: item.attributes.classification,
-                        image: item.attributes.image.data.attributes.formats
-                            .thumbnail.url,
-                        bestBeforeDay: item.attributes.bestBeforeDay,
-                    }));
-                    setProducts(_products);
-                    dispatch(setMyProducts(_products));
-                }
-            } catch (error) {
-                console.log(error);
+    const getMyProducts = React.useCallback(async () => {
+        try {
+            const res = await axiosClient.get(
+                `products?filters[userId][$eq]=${auth.id}&populate=image`
+            );
+            if (res.status == 200) {
+                const _products = res.data.data.map((item) => ({
+                    id: item.id,
+                    name: item.attributes.name,
+                    purchaseDate: convertToddMMYYY(
+                        item.attributes.purchaseDate
+                    ),
+                    expireDate: convertToddMMYYY(item.attributes.expireDate),
+                    classification: item.attributes.classification,
+                    bestBeforeDay: item.attributes.bestBeforeDay,
+                    like: item.attributes.like,
+                    image: item.attributes.image.data.attributes.formats
+                        .thumbnail.url,
+                }));
+                setProducts(_products);
+                dispatch(setMyProducts(_products));
             }
-        };
-        // @TODO: cahched my products
-        const unsubscribe = navigation.addListener("focus", () => {
-            auth && getMyProducts();
-            //Put your Data loading function here instead of my loadData()
-        });
+        } catch (error) {
+            console.log(error);
+        }
+    }, [setMyProducts, auth.id]);
 
-        return unsubscribe;
-    }, []);
+    useFocusEffect(
+        React.useCallback(() => {
+            Promise.all[getMyProducts()];
+        }, [])
+    );
 
     const handleDeleteProduct = () => {
         navigation.navigate("AddNewProductStack");

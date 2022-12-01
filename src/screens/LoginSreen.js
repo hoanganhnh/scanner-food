@@ -77,7 +77,7 @@ function LoginSreen({ navigation }) {
                 `token-devices?filters[userId][$eq]=${userId}`
             );
             const existToken = await getData("TOKEN_DEIVCE");
-            if (data.data[0].attributes.token !== existToken) {
+            if (data?.data[0]?.attributes.token !== existToken) {
                 const res = await axiosClient.post("token-devices", {
                     data: {
                         token,

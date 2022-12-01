@@ -53,7 +53,7 @@ export const useNotifications = () => {
 
     // This listener is fired whenever a notification is received while the app is foregrounded
     const handleNotification = (notification) => {
-        console.log(notification);
+        console.log("notification -->", notification);
         // could be useful if you want to display your own toast message
         // could also make a server call to refresh data in other part of the app
     };
