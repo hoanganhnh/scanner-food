@@ -21,6 +21,8 @@ import { isAuthenticated } from "../app/slices/auth";
 import { useNotifications } from "../hooks/useNotifications";
 import LinkingConfiguration from "./LinkingConfiguration";
 import AppProvider from "../contexts/app-provider";
+import ItemScreen from "../screens/ItemScreen";
+import MealScreen from "../screens/MealScreen";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -32,6 +34,16 @@ function HomeStack() {
                 options={{ headerShown: false }}
                 name="Home"
                 component={HomeScreen}
+            />
+            <Stack.Screen
+                name="ItemScreen"
+                options={{ title: "Add my Ingredients" }}
+                component={ItemScreen}
+            />
+            <Stack.Screen
+                name="MealScreen"
+                component={MealScreen}
+                options={{ title: "Meals" }}
             />
         </Stack.Navigator>
     );

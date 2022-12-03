@@ -16,7 +16,7 @@ export const CommonButton = (props) => {
                 onPress={onPress}
                 style={[
                     styles.buttonWithIcon,
-                    { backgroundColor: disabled ? "#F0F0F0" : Color.Pink },
+                    { backgroundColor: disabled ? "#F0F0F0" : Color.Black },
                     style,
                 ]}
             >
@@ -35,7 +35,7 @@ export const CommonButton = (props) => {
                 onPress={onPress}
                 style={[
                     styles.button,
-                    { backgroundColor: disabled ? "#F0F0F0" : Color.Pink },
+                    { backgroundColor: disabled ? "#F0F0F0" : Color.Black },
                     style,
                 ]}
             >
