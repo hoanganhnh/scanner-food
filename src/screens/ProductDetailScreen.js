@@ -12,27 +12,44 @@ import {
 import { Icon, Input, Button } from "react-native-elements";
 import * as ImagePicker from "expo-image-picker";
 import { SelectList } from "react-native-dropdown-select-list";
-import { format } from "date-fns";
+import { useDispatch, useSelector } from "react-redux";
+import {
+    differenceInSeconds,
+    format,
+    isAfter,
+    isBefore,
+    isToday,
+} from "date-fns";
 
 import { Device } from "../styles/values";
 import { classificationData } from "../constants/classifications";
 import DatePicker from "../components/DatePicker";
 import axiosClient from "../services/axiosClient";
+import { toggleLoading } from "../app/slices/loading";
+import { selectAuth } from "../app/slices/auth";
 
 function ProductDetailScreen({ route, navigation }) {
     const { product } = route.params;
 
     const [image, setImage] = React.useState(product.image);
+    const [file, setFile] = React.useState({});
     const [classification, setClassification] = React.useState(
         product.classification
     );
-    const [purchaseDate, setPurchaseDate] = React.useState("");
-    const [expiredDate, setExpiredDate] = React.useState("");
-    const [nameProduct, setNameProduct] = React.useState(product.name);
-    const [bestBeforeDay, setBestBeforeDay] = React.useState(
-        new Date(product.bestBeforeDay)
+    const [purchaseDate, setPurchaseDate] = React.useState(
+        product.purchaseDate
     );
-    const [favorite, setFavorite] = React.useState(product.like);
+    const [expireDate, setExpireDate] = React.useState(product.expireDate);
+    const [bestBeforeDay, setBestBeforeDay] = React.useState(
+        product.bestBeforeDay
+    );
+    const [nameProduct, setNameProduct] = React.useState(product.name);
+    // TODO: handle like product
+    const [favorite, setFavorite] = React.useState(false);
+
+    const dispatch = useDispatch();
+
+    const { auth } = useSelector(selectAuth);
 
     const pickImage = async () => {
         try {
@@ -42,8 +59,14 @@ function ProductDetailScreen({ route, navigation }) {
                 aspect: [4, 3],
                 quality: 1,
             });
-
+            setFile(result);
             if (!result.canceled) {
+                const localUri = result.uri;
+                const filename = localUri.split("/").pop();
+                // Infer the type of the image
+                const match = /\.(\w+)$/.exec(filename);
+                const type = match ? `image/${match[1]}` : `image`;
+                setFile({ uri: localUri, name: filename, type });
                 setImage(result.uri);
             }
         } catch (error) {
@@ -59,8 +82,89 @@ function ProductDetailScreen({ route, navigation }) {
         setFavorite((state) => !state);
     };
 
-    const handleUpdate = () => {
-        console.log("update");
+    const handleUpdate = async () => {
+        // FIXME: handle update products
+        if (!nameProduct) {
+            Alert.alert("Name product is require!");
+            return;
+        }
+        if (!purchaseDate) {
+            Alert.alert("Purchase date product is require!");
+            return;
+        }
+        if (!expireDate) {
+            Alert.alert("Expire date product is require!");
+            return;
+        }
+
+        if (isToday(expireDate)) {
+            Alert.alert("Expire date product must difference today !");
+            return;
+        }
+        const diff = differenceInSeconds(
+            new Date(expireDate),
+            new Date(purchaseDate)
+        );
+        if (diff < 0) {
+            Alert.alert("Error set time expire date !");
+            return;
+        }
+
+        if (!bestBeforeDay) {
+            Alert.alert("Expire date product is require!");
+            return;
+        }
+
+        if (isBefore(new Date(bestBeforeDay), new Date(purchaseDate))) {
+            Alert.alert("Best before day must after purchase date !");
+            return;
+        }
+        if (isAfter(new Date(bestBeforeDay), new Date(expireDate))) {
+            Alert.alert("Best before day must previous expire date !");
+            return;
+        }
+
+        if (!classification) {
+            Alert.alert("Classification product is require!");
+            return;
+        }
+
+        try {
+            const data = {};
+            data["name"] = nameProduct;
+            data["expireDate"] = expireDate;
+            data["purchaseDate"] = purchaseDate;
+            data["bestBeforeDay"] = bestBeforeDay;
+            data["classification"] = classification;
+            data["userId"] = auth.id;
+            data["like"] = false;
+            dispatch(toggleLoading(true));
+
+            const formdata = new FormData();
+            formdata.append("data", JSON.stringify(data));
+
+            if (file?.uri) {
+                formdata.append("files.image", file);
+            }
+            const res = await axiosClient.put(
+                `products${product.id}`,
+                formdata,
+                {
+                    headers: {
+                        Accept: "application/json",
+                        "Content-Type": "multipart/form-data",
+                    },
+                }
+            );
+
+            if (res.status === 200) {
+                Alert.alert("Update product successfull!");
+            }
+        } catch (error) {
+            dispatch(toggleLoading(false));
+            console.log("error", error);
+            Alert.alert("Update product error !");
+        }
     };
 
     const handleDeleteProduct = () => {
@@ -77,12 +181,15 @@ function ProductDetailScreen({ route, navigation }) {
                                 `products/${product.id}`
                             );
 
+                            dispatch(toggleLoading(true));
                             if (res.status == 200) {
                                 console.log("delete successfull");
+                                dispatch(toggleLoading(false));
                                 navigation.goBack();
                             }
                         } catch (error) {
                             Alert.alert("Delete product error !");
+                            dispatch(toggleLoading(false));
                             console.log(error);
                         }
                     },
@@ -96,6 +203,7 @@ function ProductDetailScreen({ route, navigation }) {
                 cancelable: true,
             }
         );
+        dispatch(toggleLoading(false));
     };
 
     return (
@@ -131,7 +239,7 @@ function ProductDetailScreen({ route, navigation }) {
                             Name product:
                         </Text>
                         <Input
-                            value={nameProduct || product.name}
+                            value={nameProduct}
                             onChangeText={handleChangeNameProduct}
                             placeholder="Name product..."
                         />
@@ -144,8 +252,11 @@ function ProductDetailScreen({ route, navigation }) {
                             <Text style={{ fontSize: 16, marginVertical: 12 }}>
                                 Purchase date:{" "}
                                 {purchaseDate
-                                    ? format(purchaseDate, "dd/MM/yyyy")
-                                    : product.purchaseDate}
+                                    ? format(
+                                          new Date(purchaseDate),
+                                          "dd/MM/yyyy"
+                                      )
+                                    : ""}
                             </Text>
                             <DatePicker getDate={setPurchaseDate} mode="date" />
                         </View>
@@ -158,11 +269,11 @@ function ProductDetailScreen({ route, navigation }) {
                         >
                             <Text style={{ fontSize: 16, marginVertical: 12 }}>
                                 Expired date:{" "}
-                                {expiredDate
-                                    ? format(expiredDate, "dd/MM/yyyy")
-                                    : product.expireDate}
+                                {expireDate
+                                    ? format(new Date(expireDate), "dd/MM/yyyy")
+                                    : ""}
                             </Text>
-                            <DatePicker getDate={setExpiredDate} mode="date" />
+                            <DatePicker getDate={setExpireDate} mode="date" />
                         </View>
                         <SelectList
                             setSelected={(val) => setClassification(val)}
@@ -185,8 +296,8 @@ function ProductDetailScreen({ route, navigation }) {
                                 Best before:{" "}
                                 {bestBeforeDay
                                     ? format(
-                                          bestBeforeDay,
-                                          "dd/MM/yyyy - HH:mm:ss"
+                                          new Date(bestBeforeDay),
+                                          "dd/MM/yyyy"
                                       )
                                     : ""}
                             </Text>

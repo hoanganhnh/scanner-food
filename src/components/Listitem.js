@@ -1,6 +1,7 @@
 import React from "react";
 import { Text, View, StyleSheet, Image } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import { format } from "date-fns";
 
 import { globalStyles } from "../styles/global";
 
@@ -30,8 +31,23 @@ class ListItem extends React.Component {
                             </Text>
                         </TouchableOpacity>
                         <Text style={globalStyles.itemListRating}>
-                            Time expiry: {this.props.item.purchaseDate} {" - "}
-                            {this.props.item.expireDate}
+                            Time expiry:{" "}
+                            {format(
+                                new Date(this.props.item.purchaseDate),
+                                "dd/MM/yyyy"
+                            )}{" "}
+                            {" - "}
+                            {format(
+                                new Date(this.props.item.expireDate),
+                                "dd/MM/yyyy"
+                            )}
+                        </Text>
+                        <Text style={globalStyles.itemListRating}>
+                            Best before day:{" "}
+                            {format(
+                                new Date(this.props.item.bestBeforeDay),
+                                "dd/MM/yyyy"
+                            )}
                         </Text>
                         <Text style={globalStyles.itemListRating}>
                             Categories: {this.props.item.classification}

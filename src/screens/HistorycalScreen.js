@@ -8,7 +8,6 @@ import ListItem from "../components/Listitem";
 import axiosClient from "../services/axiosClient";
 import { globalTextStyle } from "../styles/global";
 import { selectAuth } from "../app/slices/auth";
-import { convertToddMMYYY } from "../utils/formatDate";
 import { setMyProducts } from "../app/slices/product";
 
 function HistorycalScreen({ navigation }) {
@@ -26,13 +25,10 @@ function HistorycalScreen({ navigation }) {
                 const _products = res.data.data.map((item) => ({
                     id: item.id,
                     name: item.attributes.name,
-                    purchaseDate: convertToddMMYYY(
-                        item.attributes.purchaseDate
-                    ),
-                    expireDate: convertToddMMYYY(item.attributes.expireDate),
+                    purchaseDate: item.attributes.purchaseDate,
+                    expireDate: item.attributes.expireDate,
                     classification: item.attributes.classification,
                     bestBeforeDay: item.attributes.bestBeforeDay,
-                    like: item.attributes.like,
                     image: item.attributes.image.data.attributes.formats
                         .thumbnail.url,
                 }));
@@ -50,7 +46,7 @@ function HistorycalScreen({ navigation }) {
         }, [])
     );
 
-    const handleDeleteProduct = () => {
+    const handleSwicthAddProduct = () => {
         navigation.navigate("AddNewProductStack");
     };
 
@@ -80,7 +76,7 @@ function HistorycalScreen({ navigation }) {
                         color: "white",
                         marginHorizontal: 20,
                     }}
-                    onPress={handleDeleteProduct}
+                    onPress={handleSwicthAddProduct}
                 />
             )}
         </View>
