@@ -20,6 +20,7 @@ import ProductDetailScreen from "../screens/ProductDetailScreen";
 import { isAuthenticated } from "../app/slices/auth";
 import { useNotifications } from "../hooks/useNotifications";
 import LinkingConfiguration from "./LinkingConfiguration";
+import AppProvider from "../contexts/app-provider";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -126,13 +127,6 @@ export default function AppFlow() {
         useNotifications();
     React.useEffect(() => {
         registerForPushNotificationsAsync(true);
-        Notifications.setNotificationHandler({
-            handleNotification: async () => ({
-                shouldShowAlert: true,
-                shouldPlaySound: true,
-                shouldSetBadge: false,
-            }),
-        });
         const responseListener =
             Notifications.addNotificationResponseReceivedListener(
                 handleNotificationResponse
@@ -146,29 +140,31 @@ export default function AppFlow() {
     }, []);
 
     return (
-        <NavigationContainer linking={LinkingConfiguration} independent>
-            <Stack.Navigator screenOptions={{ headerShown: false }}>
-                {isLogin ? (
-                    <Stack.Group>
-                        <Stack.Screen name="Home" component={Home} />
-                    </Stack.Group>
-                ) : (
-                    <Stack.Group>
-                        <Stack.Screen
-                            name="LoginSreen"
-                            component={LoginSreen}
-                        />
-                        <Stack.Screen
-                            name="RegisterScreen"
-                            component={RegisterScreen}
-                        />
-                        <Stack.Screen
-                            name="ForgotPasswordScreen"
-                            component={ForgotPasswordScreen}
-                        />
-                    </Stack.Group>
-                )}
-            </Stack.Navigator>
-        </NavigationContainer>
+        <AppProvider>
+            <NavigationContainer linking={LinkingConfiguration} independent>
+                <Stack.Navigator screenOptions={{ headerShown: false }}>
+                    {isLogin ? (
+                        <Stack.Group>
+                            <Stack.Screen name="Home" component={Home} />
+                        </Stack.Group>
+                    ) : (
+                        <Stack.Group>
+                            <Stack.Screen
+                                name="LoginSreen"
+                                component={LoginSreen}
+                            />
+                            <Stack.Screen
+                                name="RegisterScreen"
+                                component={RegisterScreen}
+                            />
+                            <Stack.Screen
+                                name="ForgotPasswordScreen"
+                                component={ForgotPasswordScreen}
+                            />
+                        </Stack.Group>
+                    )}
+                </Stack.Navigator>
+            </NavigationContainer>
+        </AppProvider>
     );
 }
