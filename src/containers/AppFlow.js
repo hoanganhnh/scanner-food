@@ -22,6 +22,7 @@ import AppProvider from "../contexts/app-provider";
 import ItemScreen from "../screens/ItemScreen";
 import MealScreen from "../screens/MealScreen";
 import MealDetailScreen from "../screens/MealDetailScreen";
+import NotificationListScreen from "../screens/NotificationListScreen";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -69,9 +70,17 @@ function HistoryStack() {
 function SettingStack() {
     return (
         <Stack.Navigator>
-            <Stack.Screen name="Seeting" component={SettingSreen} />
+            <Stack.Screen name="Setting" component={SettingSreen} />
             <Stack.Screen name="Favorite" component={FavoriteScreen} />
-            <Stack.Screen name="ProfileSreen" component={ProfileSreen} />
+            <Stack.Screen
+                name="ProfileSreen"
+                component={ProfileSreen}
+                options={{ title: "My profile" }}
+            />
+            <Stack.Screen
+                name="NotificationList"
+                component={NotificationListScreen}
+            />
         </Stack.Navigator>
     );
 }
@@ -126,7 +135,7 @@ function Home() {
                 }}
             />
             <Tab.Screen
-                name="Setting"
+                name="SettingStack"
                 component={SettingStack}
                 options={{
                     tabBarIcon: () => <Icon name="setting" type="antdesign" />,
