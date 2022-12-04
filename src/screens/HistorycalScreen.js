@@ -17,6 +17,10 @@ function HistorycalScreen({ navigation }) {
     const { auth } = useSelector(selectAuth);
 
     const getMyProducts = React.useCallback(async () => {
+        if (!auth) {
+            console.log("Must login!!!");
+            return;
+        }
         try {
             const res = await axiosClient.get(
                 `products?filters[userId][$eq]=${auth.id}&populate=image`
@@ -29,8 +33,8 @@ function HistorycalScreen({ navigation }) {
                     expireDate: item.attributes.expireDate,
                     classification: item.attributes.classification,
                     bestBeforeDay: item.attributes.bestBeforeDay,
-                    image: item.attributes.image.data.attributes.formats
-                        .thumbnail.url,
+                    image: item.attributes.image.data.attributes.formats.small
+                        .url,
                 }));
                 setProducts(_products);
                 dispatch(setMyProducts(_products));
@@ -38,7 +42,7 @@ function HistorycalScreen({ navigation }) {
         } catch (error) {
             console.log(error);
         }
-    }, [setMyProducts, auth.id]);
+    }, [dispatch, auth.id]);
 
     useFocusEffect(
         React.useCallback(() => {

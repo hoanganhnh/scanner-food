@@ -5,7 +5,7 @@ import { openSettings, openURL } from "expo-linking";
 import { storeData } from "../utils/async-storage";
 
 export const useNotifications = () => {
-    const registerForPushNotificationsAsync = async (alertUser) => {
+    const registerForPushNotificationsAsync = async () => {
         if (Device.isDevice) {
             const { status: existingStatus } =
                 await Notifications.getPermissionsAsync();
@@ -17,20 +17,19 @@ export const useNotifications = () => {
             }
 
             if (finalStatus !== "granted") {
-                if (alertUser)
-                    Alert.alert(
-                        "Error",
-                        "To enable Push Notifications please change your settings.",
-                        [
-                            {
-                                text: "OK",
-                            },
-                            {
-                                text: "Open Settings",
-                                onPress: openSettings,
-                            },
-                        ]
-                    );
+                Alert.alert(
+                    "Error",
+                    "To enable Push Notifications please change your settings.",
+                    [
+                        {
+                            text: "OK",
+                        },
+                        {
+                            text: "Open Settings",
+                            onPress: openSettings,
+                        },
+                    ]
+                );
 
                 throw new Error("User doesn't allow for notifications");
             }
@@ -59,9 +58,8 @@ export const useNotifications = () => {
     };
 
     // This listener is fired whenever a user taps on or interacts with a notification (works when app is foregrounded, backgrounded, or killed)
-    const handleNotificationResponse = (response) => {
+    const handleNotificationResponse = async (response) => {
         const data = response.notification.request.content.data;
-        console.log(data);
         if (data?.url) {
             openURL(data.url);
         }

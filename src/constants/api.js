@@ -1,7 +1,7 @@
 export const OPEN_API_FOOD = "https://world.openfoodfacts.org/api/v0/product";
 
 export const ApiConfigs = {
-    baseURL: "http://172.29.128.1:1337/api/",
+    baseURL: "http://192.168.1.16:1337/api/",
     headers: {
         "X-Requested-With": "XMLHttpRequest",
         "Content-Type": "application/json",

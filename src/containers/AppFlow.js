@@ -4,7 +4,6 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer } from "@react-navigation/native";
 import { useSelector } from "react-redux";
 import { Icon } from "react-native-elements";
-import * as Notifications from "expo-notifications";
 
 import ScanBarCode from "../components/ScanBarCode";
 import HomeScreen from "../screens/HomeScreen";
@@ -18,11 +17,11 @@ import AddProductSreen from "../screens/AddProductSreen";
 import HistorycalScreen from "../screens/HistorycalScreen";
 import ProductDetailScreen from "../screens/ProductDetailScreen";
 import { isAuthenticated } from "../app/slices/auth";
-import { useNotifications } from "../hooks/useNotifications";
 import LinkingConfiguration from "./LinkingConfiguration";
 import AppProvider from "../contexts/app-provider";
 import ItemScreen from "../screens/ItemScreen";
 import MealScreen from "../screens/MealScreen";
+import MealDetailScreen from "../screens/MealDetailScreen";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -44,6 +43,11 @@ function HomeStack() {
                 name="MealScreen"
                 component={MealScreen}
                 options={{ title: "Meals" }}
+            />
+            <Stack.Screen
+                name="MealDetailScreen"
+                component={MealDetailScreen}
+                options={{ headerShown: false }}
             />
         </Stack.Navigator>
     );
@@ -134,22 +138,6 @@ function Home() {
 
 export default function AppFlow() {
     const isLogin = useSelector(isAuthenticated);
-
-    const { registerForPushNotificationsAsync, handleNotificationResponse } =
-        useNotifications();
-    React.useEffect(() => {
-        registerForPushNotificationsAsync(true);
-        const responseListener =
-            Notifications.addNotificationResponseReceivedListener(
-                handleNotificationResponse
-            );
-
-        return () => {
-            if (responseListener) {
-                Notifications.removeNotificationSubscription(responseListener);
-            }
-        };
-    }, []);
 
     return (
         <AppProvider>
