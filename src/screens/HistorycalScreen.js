@@ -33,6 +33,7 @@ function HistorycalScreen({ navigation }) {
                     expireDate: item.attributes.expireDate,
                     classification: item.attributes.classification,
                     bestBeforeDay: item.attributes.bestBeforeDay,
+                    like: item.attributes.like,
                     image: item.attributes.image.data.attributes.url,
                 }));
                 setProducts(_products);

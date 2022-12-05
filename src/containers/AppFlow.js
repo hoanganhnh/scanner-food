@@ -76,7 +76,7 @@ function SettingStack() {
                 component={SettingSreen}
                 options={{ title: "Setting" }}
             />
-            <Stack.Screen name="Favorite" component={FavoriteScreen} />
+            <Stack.Screen name="Favorites" component={FavoriteScreen} />
             <Stack.Screen
                 name="ProfileSreen"
                 component={ProfileSreen}
@@ -85,6 +85,7 @@ function SettingStack() {
             <Stack.Screen
                 name="NotificationList"
                 component={NotificationListScreen}
+                options={{ title: "Notifications" }}
             />
         </Stack.Navigator>
     );

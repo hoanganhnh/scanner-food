@@ -43,7 +43,7 @@ function ProductDetailScreen({ route, navigation }) {
     );
     const [nameProduct, setNameProduct] = React.useState(product.name);
     // TODO: handle like product
-    const [favorite, setFavorite] = React.useState(false);
+    const [favorite, setFavorite] = React.useState(product.like);
 
     const dispatch = useDispatch();
 
@@ -112,7 +112,7 @@ function ProductDetailScreen({ route, navigation }) {
                 "yyyy-MM-dd"
             );
             data["classification"] = classification;
-            // data["userId"] = auth.id;
+            data["like"] = favorite;
             dispatch(toggleLoading(true));
 
             const res = await axiosClient.put(`products/${product.id}`, {

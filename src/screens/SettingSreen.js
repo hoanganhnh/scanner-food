@@ -28,7 +28,7 @@ function SettingSreen({ navigation }) {
                     </ListItem>
                     <ListItem
                         onPress={() => {
-                            navigation.navigate("Favorite");
+                            navigation.navigate("Favorites");
                         }}
                     >
                         <ListItem.Content>
