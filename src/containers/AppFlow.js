@@ -70,7 +70,11 @@ function HistoryStack() {
 function SettingStack() {
     return (
         <Stack.Navigator>
-            <Stack.Screen name="Setting" component={SettingSreen} />
+            <Stack.Screen
+                name="SettingScreen"
+                component={SettingSreen}
+                options={{ title: "Setting" }}
+            />
             <Stack.Screen name="Favorite" component={FavoriteScreen} />
             <Stack.Screen
                 name="ProfileSreen"
@@ -135,7 +139,7 @@ function Home() {
                 }}
             />
             <Tab.Screen
-                name="SettingStack"
+                name="Setting"
                 component={SettingStack}
                 options={{
                     tabBarIcon: () => <Icon name="setting" type="antdesign" />,

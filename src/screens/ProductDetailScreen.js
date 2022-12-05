@@ -10,7 +10,6 @@ import {
     Alert,
 } from "react-native";
 import { Icon, Input, Button } from "react-native-elements";
-import * as ImagePicker from "expo-image-picker";
 import { SelectList } from "react-native-dropdown-select-list";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -31,8 +30,8 @@ import { selectAuth } from "../app/slices/auth";
 function ProductDetailScreen({ route, navigation }) {
     const { product } = route.params;
 
+    // eslint-disable-next-line no-unused-vars
     const [image, setImage] = React.useState(product.image);
-    const [file, setFile] = React.useState({});
     const [classification, setClassification] = React.useState(
         product.classification
     );
@@ -50,29 +49,6 @@ function ProductDetailScreen({ route, navigation }) {
     const dispatch = useDispatch();
 
     const { auth } = useSelector(selectAuth);
-
-    const pickImage = async () => {
-        try {
-            const result = await ImagePicker.launchImageLibraryAsync({
-                mediaTypes: ImagePicker.MediaTypeOptions.Images,
-                allowsEditing: true,
-                aspect: [4, 3],
-                quality: 1,
-            });
-            setFile(result);
-            if (!result.canceled) {
-                const localUri = result.uri;
-                const filename = localUri.split("/").pop();
-                // Infer the type of the image
-                const match = /\.(\w+)$/.exec(filename);
-                const type = match ? `image/${match[1]}` : `image`;
-                setFile({ uri: localUri, name: filename, type });
-                setImage(result.uri);
-            }
-        } catch (error) {
-            console.log(error);
-        }
-    };
 
     const handleChangeNameProduct = (value) => {
         setNameProduct(value);
@@ -132,30 +108,20 @@ function ProductDetailScreen({ route, navigation }) {
         try {
             const data = {};
             data["name"] = nameProduct;
-            data["expireDate"] = expireDate;
-            data["purchaseDate"] = purchaseDate;
-            data["bestBeforeDay"] = bestBeforeDay;
+            data["expireDate"] = format(new Date(expireDate), "yyyy-MM-dd");
+            data["purchaseDate"] = format(new Date(purchaseDate), "yyyy-MM-dd");
+            data["bestBeforeDay"] = format(
+                new Date(bestBeforeDay),
+                "yyyy-MM-dd"
+            );
             data["classification"] = classification;
             data["userId"] = auth.id;
             data["like"] = false;
             dispatch(toggleLoading(true));
 
-            const formdata = new FormData();
-            formdata.append("data", JSON.stringify(data));
-
-            if (file?.uri) {
-                formdata.append("files.image", file);
-            }
-            const res = await axiosClient.put(
-                `products${product.id}`,
-                formdata,
-                {
-                    headers: {
-                        Accept: "application/json",
-                        "Content-Type": "multipart/form-data",
-                    },
-                }
-            );
+            const res = await axiosClient.put(`products${product.id}`, {
+                data,
+            });
 
             if (res.status === 200) {
                 Alert.alert("Update product successfull!");
@@ -215,26 +181,6 @@ function ProductDetailScreen({ route, navigation }) {
                         source={{ uri: image ? image : product.image }}
                     />
                     <View style={styles.container}>
-                        <Text style={{ fontSize: 16, marginVertical: 12 }}>
-                            Get image product:
-                        </Text>
-                        <View style={styles.iconContainer}>
-                            <Text style={styles.icon}>
-                                <Icon
-                                    onPress={pickImage}
-                                    name="image"
-                                    type="font-awesome"
-                                    size={36}
-                                />
-                            </Text>
-                            <Text>
-                                <Icon
-                                    name="camera"
-                                    type="font-awesome"
-                                    size={36}
-                                />
-                            </Text>
-                        </View>
                         <Text style={{ fontSize: 16, marginVertical: 12 }}>
                             Name product:
                         </Text>

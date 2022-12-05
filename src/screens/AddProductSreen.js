@@ -29,6 +29,7 @@ import { selectAuth } from "../app/slices/auth";
 import { toggleLoading } from "../app/slices/loading";
 import DatePicker from "../components/DatePicker";
 import axiosClient from "../services/axiosClient";
+import CameraExpo from "../components/CameraExpo";
 
 LogBox.ignoreLogs([
     "Non-serializable values were found in the navigation state",
@@ -43,6 +44,8 @@ function AddProductSreen() {
     const [nameProduct, setNameProduct] = React.useState("");
     const [bestBeforeDay, setBestBeforeDay] = React.useState("");
 
+    const [showCamera, setShowCamera] = React.useState(false);
+
     const { auth } = useSelector(selectAuth);
     const dispatch = useDispatch();
     const navigation = useNavigation();
@@ -52,10 +55,8 @@ function AddProductSreen() {
             const result = await ImagePicker.launchImageLibraryAsync({
                 mediaTypes: ImagePicker.MediaTypeOptions.Images,
                 allowsEditing: true,
-                aspect: [4, 3],
                 quality: 1,
             });
-            setFile(result);
             if (!result.canceled) {
                 const localUri = result.uri;
                 const filename = localUri.split("/").pop();
@@ -171,6 +172,23 @@ function AddProductSreen() {
         dispatch(toggleLoading(false));
     };
 
+    const onShowCamera = () => {
+        setShowCamera(true);
+    };
+
+    const getImageFromCamera = (image) => {
+        if (image) {
+            const localUri = image.uri;
+            const filename = localUri.split("/").pop();
+            const match = /\.(\w+)$/.exec(filename);
+            const type = match ? `image/${match[1]}` : `image`;
+
+            setFile({ uri: localUri, name: filename, type });
+            setImage(image.uri);
+            setShowCamera(false);
+        }
+    };
+
     return (
         <View style={styles.wrapper}>
             <SafeAreaView>
@@ -197,6 +215,7 @@ function AddProductSreen() {
                                     name="camera"
                                     type="font-awesome"
                                     size={36}
+                                    onPress={onShowCamera}
                                 />
                             </Text>
                         </View>
@@ -292,6 +311,9 @@ function AddProductSreen() {
                         />
                     </View>
                 </ScrollView>
+                {showCamera && (
+                    <CameraExpo getImageFromCamera={getImageFromCamera} />
+                )}
             </SafeAreaView>
         </View>
     );
