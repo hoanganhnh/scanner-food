@@ -48,6 +48,16 @@ function SettingSreen({ navigation }) {
                         </ListItem.Content>
                         <ListItem.Chevron />
                     </ListItem>
+                    <ListItem
+                        onPress={() => {
+                            navigation.navigate("PolicyScreen");
+                        }}
+                    >
+                        <ListItem.Content>
+                            <ListItem.Title>{"Privacy Policy"}</ListItem.Title>
+                        </ListItem.Content>
+                        <ListItem.Chevron />
+                    </ListItem>
                     <Button
                         title="Log out"
                         buttonStyle={{

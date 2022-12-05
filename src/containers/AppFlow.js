@@ -24,6 +24,7 @@ import ItemScreen from "../screens/ItemScreen";
 import MealScreen from "../screens/MealScreen";
 import MealDetailScreen from "../screens/MealDetailScreen";
 import NotificationListScreen from "../screens/NotificationListScreen";
+import PolicyScreen from "../screens/PolicyScreen";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -86,6 +87,11 @@ function SettingStack() {
                 name="NotificationList"
                 component={NotificationListScreen}
                 options={{ title: "Notifications" }}
+            />
+            <Stack.Screen
+                name="PolicyScreen"
+                component={PolicyScreen}
+                options={{ title: "Privacy Policy" }}
             />
         </Stack.Navigator>
     );

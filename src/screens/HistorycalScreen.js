@@ -1,14 +1,20 @@
 import React from "react";
-import { View, FlatList } from "react-native";
+import {
+    SafeAreaView,
+    Text,
+    SectionList,
+    StyleSheet,
+    View,
+} from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { useFocusEffect } from "@react-navigation/native";
 import { Button } from "react-native-elements";
 
 import ListItem from "../components/Listitem";
 import axiosClient from "../services/axiosClient";
-import { globalTextStyle } from "../styles/global";
 import { selectAuth } from "../app/slices/auth";
 import { setMyProducts } from "../app/slices/product";
+import { groupByKeyDay } from "../utils/array-helper";
 
 function HistorycalScreen({ navigation }) {
     const [products, setProducts] = React.useState([]);
@@ -34,9 +40,11 @@ function HistorycalScreen({ navigation }) {
                     classification: item.attributes.classification,
                     bestBeforeDay: item.attributes.bestBeforeDay,
                     like: item.attributes.like,
+                    createdAt: item.attributes.createdAt,
                     image: item.attributes.image.data.attributes.url,
                 }));
-                setProducts(_products);
+                const newProducts = groupByKeyDay(_products, "createdAt");
+                setProducts(newProducts);
                 dispatch(setMyProducts(_products));
             }
         } catch (error) {
@@ -55,14 +63,21 @@ function HistorycalScreen({ navigation }) {
     };
 
     return (
-        <View style={globalTextStyle.history}>
+        <SafeAreaView style={styles.container}>
             {products.length > 0 ? (
-                <FlatList
-                    data={products}
-                    renderItem={({ item }) => (
-                        <ListItem item={item} navigation={navigation} />
+                <SectionList
+                    sections={products}
+                    keyExtractor={(item, index) => item + index}
+                    renderItem={({ item }) => {
+                        return <ListItem item={item} navigation={navigation} />;
+                    }}
+                    renderSectionHeader={({ section }) => (
+                        <View style={{ paddingHorizontal: 24 }}>
+                            <Text style={styles.heading}>
+                                {section.createdAt}
+                            </Text>
+                        </View>
                     )}
-                    keyExtractor={(item) => item?.id?.toString()}
                 />
             ) : (
                 <Button
@@ -83,8 +98,19 @@ function HistorycalScreen({ navigation }) {
                     onPress={handleSwicthAddProduct}
                 />
             )}
-        </View>
+        </SafeAreaView>
     );
 }
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        paddingVertical: 12,
+    },
+
+    heading: {
+        fontSize: 16,
+    },
+});
 
 export default HistorycalScreen;
