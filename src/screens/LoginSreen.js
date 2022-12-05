@@ -19,8 +19,8 @@ import { CommonText } from "../components/common/CommonText";
 import { FontSize, FontWithBold, Spacing } from "../styles/spacing";
 import { toggleLoading } from "../app/slices/loading";
 import { Device } from "../styles/values";
-import axiosClient from "../services/axiosClient";
 import { getData } from "../utils/async-storage";
+import { handleSaveTokenDevice } from "../utils/save-token-device";
 
 // @TODO: handle validate
 function LoginSreen({ navigation }) {
@@ -69,45 +69,6 @@ function LoginSreen({ navigation }) {
     };
     const registerNavigate = () => {
         navigation.navigate("RegisterScreen");
-    };
-
-    const handleSaveTokenDevice = async (token, userId) => {
-        try {
-            const { data } = await axiosClient.get(
-                `token-devices?filters[userId][$eq]=${userId}`
-            );
-            const existToken = await getData("TOKEN_DEIVCE");
-
-            if (data?.data.length > 0) {
-                if (data?.data[0]?.attributes.token !== existToken) {
-                    console.log("delete token");
-                    await axiosClient.delete(
-                        `token-devices/${data?.data[0].id}`
-                    );
-                    const res = await axiosClient.post("token-devices", {
-                        data: {
-                            token,
-                            userId,
-                        },
-                    });
-                    if (res.status === 200) {
-                        console.log("save token device successfull");
-                    }
-                }
-            } else {
-                const res = await axiosClient.post("token-devices", {
-                    data: {
-                        token,
-                        userId,
-                    },
-                });
-                if (res.status === 200) {
-                    console.log("save token device successfull");
-                }
-            }
-        } catch (error) {
-            console.log(error);
-        }
     };
 
     return (

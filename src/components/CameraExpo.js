@@ -13,7 +13,7 @@ import { AntDesign, MaterialIcons } from "@expo/vector-icons";
 const WINDOW_HEIGHT = Dimensions.get("window").height;
 const CAPTURE_SIZE = Math.floor(WINDOW_HEIGHT * 0.08);
 
-export default function CameraExpo({ getImageFromCamera }) {
+export default function CameraExpo({ getImageFromCamera, offCamera }) {
     const cameraRef = useRef();
     const [cameraType, setCameraType] = useState(Camera.Constants.Type.back);
     const [isPreview, setIsPreview] = useState(false);
@@ -57,6 +57,10 @@ export default function CameraExpo({ getImageFromCamera }) {
         if (source.uri) {
             getImageFromCamera(source);
         }
+    };
+
+    const cancelCamera = () => {
+        offCamera();
     };
 
     if (!permission) {
@@ -120,6 +124,13 @@ export default function CameraExpo({ getImageFromCamera }) {
                         onPress={onSnap}
                         style={styles.capture}
                     />
+                    <TouchableOpacity
+                        onPress={cancelCamera}
+                        style={styles.cancelCamera}
+                        activeOpacity={0.7}
+                    >
+                        <AntDesign name="close" size={28} color="#fff" />
+                    </TouchableOpacity>
                 </View>
             )}
         </View>
@@ -145,6 +156,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#5A45FF",
         height: CAPTURE_SIZE,
         width: CAPTURE_SIZE,
+        bottom: -10,
         borderRadius: Math.floor(CAPTURE_SIZE / 2),
         marginBottom: 24,
         marginHorizontal: 30,
@@ -168,6 +180,17 @@ const styles = StyleSheet.create({
         height: 50,
         width: 50,
         borderRadius: 25,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "#5A45FF",
+        opacity: 0.7,
+    },
+    cancelCamera: {
+        position: "absolute",
+        right: CAPTURE_SIZE + 20,
+        height: CAPTURE_SIZE - 10,
+        width: CAPTURE_SIZE - 10,
+        borderRadius: 50,
         justifyContent: "center",
         alignItems: "center",
         backgroundColor: "#5A45FF",

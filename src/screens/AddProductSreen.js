@@ -185,8 +185,12 @@ function AddProductSreen() {
 
             setFile({ uri: localUri, name: filename, type });
             setImage(image.uri);
-            setShowCamera(false);
+            offCamera();
         }
+    };
+
+    const offCamera = () => {
+        setShowCamera(false);
     };
 
     return (
@@ -312,7 +316,10 @@ function AddProductSreen() {
                     </View>
                 </ScrollView>
                 {showCamera && (
-                    <CameraExpo getImageFromCamera={getImageFromCamera} />
+                    <CameraExpo
+                        getImageFromCamera={getImageFromCamera}
+                        offCamera={offCamera}
+                    />
                 )}
             </SafeAreaView>
         </View>

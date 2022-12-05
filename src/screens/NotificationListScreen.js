@@ -1,18 +1,31 @@
 import React from "react";
-import { format } from "date-fns";
 import { useSelector } from "react-redux";
-import { View, FlatList } from "react-native";
+import {
+    View,
+    FlatList,
+    ActivityIndicator,
+    StyleSheet,
+    TouchableOpacity,
+    Alert,
+    Text,
+} from "react-native";
 import { Icon, ListItem } from "react-native-elements";
-import { useFocusEffect } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 
 import { selectAuth } from "../app/slices/auth";
 import axiosClient from "../services/axiosClient";
+import { timeAgo } from "../utils/time";
 
 function NotificationListScreen() {
     const [notifications, setNotifications] = React.useState([]);
+    const [loading, setLoading] = React.useState(false);
+
     const { auth } = useSelector(selectAuth);
 
+    const navigation = useNavigation();
+
     const getNotfications = async () => {
+        setLoading(true);
         try {
             const { data } = await axiosClient.get(
                 `/notifications?filters[userId][$eq]=${auth.id}`
@@ -21,11 +34,13 @@ function NotificationListScreen() {
                 id: item.id,
                 message: item.attributes.message,
                 createdAt: item.attributes.createdAt,
+                productId: item.attributes.productId,
             }));
             setNotifications(_notifications);
         } catch (error) {
             console.log("NotificationListScreen", error);
         }
+        setLoading(false);
     };
     useFocusEffect(
         React.useCallback(() => {
@@ -33,39 +48,154 @@ function NotificationListScreen() {
         }, [])
     );
 
+    const onDeleteNotification = (id) => {
+        try {
+            Alert.alert(
+                "Delete notifications",
+                "Are you sure you want to delete ?",
+                [
+                    {
+                        text: "Ok",
+                        onPress: async () => {
+                            console.log("delete notification id", id);
+                            try {
+                                const res = await axiosClient.delete(
+                                    `notifications/${id}`
+                                );
+
+                                if (res.status == 200) {
+                                    console.log("delete successfull");
+                                    setNotifications((preState) =>
+                                        preState.filter(
+                                            (item) => item.id !== id
+                                        )
+                                    );
+                                }
+                            } catch (error) {
+                                Alert.alert("Delete notification error !");
+                                console.log(error);
+                            }
+                        },
+                    },
+                    {
+                        text: "Cancel",
+                        style: "cancel",
+                    },
+                ],
+                {
+                    cancelable: true,
+                }
+            );
+        } catch (error) {
+            console.log("onDeleteNotification", error);
+        }
+    };
+
+    const swicthToProductDetail = async (id) => {
+        try {
+            const {
+                data: { data },
+            } = await axiosClient.get(`products/${id}?populate=image`);
+
+            const product = {
+                id: data.id,
+                bestBeforeDay: data.attributes.bestBeforeDay,
+                purchaseDate: data.attributes.purchaseDate,
+                expireDate: data.attributes.expireDate,
+                classification: data.attributes.classification,
+                name: data.attributes.name,
+                userId: data.attributes.userId,
+                image: data.attributes.image.data.attributes.url,
+            };
+
+            navigation.navigate("HistoryStack", {
+                screen: "Product",
+                params: {
+                    product,
+                },
+                initial: false,
+            });
+        } catch (error) {
+            console.log("swicthToProductDetail", error);
+
+            if (error.response.data.error.status === 404) {
+                Alert.alert("Product has deleted !");
+            }
+        }
+    };
+
     return (
-        <View>
-            <FlatList
-                data={notifications}
-                keyExtractor={(a) => a.id}
-                renderItem={({ item }) => {
-                    return (
-                        <ListItem bottomDivider>
-                            <ListItem.Content>
-                                <ListItem.Title style={{ marginBottom: 4 }}>
-                                    {item.message}
-                                </ListItem.Title>
-                                <View
-                                    style={{
-                                        alignItems: "center",
-                                        flexDirection: "row",
-                                    }}
-                                >
-                                    <ListItem.Title style={{ marginRight: 4 }}>
-                                        {format(
-                                            new Date(item.createdAt),
-                                            "dd/MM/YYY - hh:mm:ss"
-                                        )}
+        <View style={{ flex: 1 }}>
+            {loading && <ActivityIndicator size="large" color="#000" />}
+            {notifications.length ? (
+                <FlatList
+                    data={notifications}
+                    keyExtractor={(a) => a.id}
+                    renderItem={({ item }) => {
+                        return (
+                            <ListItem
+                                bottomDivider
+                                onPress={() =>
+                                    swicthToProductDetail(item.productId)
+                                }
+                            >
+                                <ListItem.Content>
+                                    <ListItem.Title style={{ marginBottom: 4 }}>
+                                        {item.message}
                                     </ListItem.Title>
-                                    <Icon name="av-timer" />
-                                </View>
-                            </ListItem.Content>
-                        </ListItem>
-                    );
-                }}
-            />
+                                    <View style={styles.row}>
+                                        <View
+                                            style={{
+                                                flexDirection: "row",
+                                            }}
+                                        >
+                                            <ListItem.Title
+                                                style={{ marginRight: 4 }}
+                                            >
+                                                {timeAgo(item.createdAt)}
+                                            </ListItem.Title>
+                                            <Icon name="av-timer" />
+                                        </View>
+                                        <TouchableOpacity
+                                            onPress={() =>
+                                                onDeleteNotification(item.id)
+                                            }
+                                        >
+                                            <Icon
+                                                name="delete"
+                                                type="ant-design"
+                                            />
+                                        </TouchableOpacity>
+                                    </View>
+                                </ListItem.Content>
+                            </ListItem>
+                        );
+                    }}
+                />
+            ) : (
+                <View style={styles.txtCotainer}>
+                    <Text style={styles.mainHeading}>No notifications</Text>
+                </View>
+            )}
         </View>
     );
 }
+
+const styles = StyleSheet.create({
+    row: {
+        lignItems: "center",
+        flexDirection: "row",
+        justifyContent: "space-between",
+        width: "100%",
+    },
+    txtCotainer: {
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100%",
+    },
+    mainHeading: {
+        fontSize: 24,
+    },
+});
 
 export default NotificationListScreen;

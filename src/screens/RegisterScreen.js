@@ -19,6 +19,8 @@ import { CommonInput } from "../components/common/CommonInput";
 import { CommonText } from "../components/common/CommonText";
 import { CommonButton } from "../components/common/CommonButton";
 import { toggleLoading } from "../app/slices/loading";
+import { getData } from "../utils/async-storage";
+import { handleSaveTokenDevice } from "../utils/save-token-device";
 
 // @TODO: handle validate
 function RegisterScreen({ navigation }) {
@@ -55,6 +57,8 @@ function RegisterScreen({ navigation }) {
                 const { jwt, user } = unwrapResult(result);
                 dispath(setToken(jwt));
                 dispath(setAuth(user));
+                const data = await getData("TOKEN_DEIVCE");
+                await handleSaveTokenDevice(data, user.id);
             } catch (error) {
                 console.log(error);
                 dispath(toggleLoading(false));

@@ -5,6 +5,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { useSelector } from "react-redux";
 import { Icon } from "react-native-elements";
 
+import { useNotifications } from "../hooks/useNotifications";
 import ScanBarCode from "../components/ScanBarCode";
 import HomeScreen from "../screens/HomeScreen";
 import FavoriteScreen from "../screens/FavoriteScreen";
@@ -151,7 +152,10 @@ function Home() {
 
 export default function AppFlow() {
     const isLogin = useSelector(isAuthenticated);
-
+    const { registerForPushNotificationsAsync } = useNotifications();
+    React.useEffect(() => {
+        registerForPushNotificationsAsync();
+    }, []);
     return (
         <AppProvider>
             <NavigationContainer linking={LinkingConfiguration} independent>

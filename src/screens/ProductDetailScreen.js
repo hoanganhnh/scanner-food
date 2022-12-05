@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { Icon, Input, Button } from "react-native-elements";
 import { SelectList } from "react-native-dropdown-select-list";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import {
     differenceInSeconds,
     format,
@@ -25,7 +25,6 @@ import { classificationData } from "../constants/classifications";
 import DatePicker from "../components/DatePicker";
 import axiosClient from "../services/axiosClient";
 import { toggleLoading } from "../app/slices/loading";
-import { selectAuth } from "../app/slices/auth";
 
 function ProductDetailScreen({ route, navigation }) {
     const { product } = route.params;
@@ -47,8 +46,6 @@ function ProductDetailScreen({ route, navigation }) {
     const [favorite, setFavorite] = React.useState(false);
 
     const dispatch = useDispatch();
-
-    const { auth } = useSelector(selectAuth);
 
     const handleChangeNameProduct = (value) => {
         setNameProduct(value);
@@ -115,11 +112,10 @@ function ProductDetailScreen({ route, navigation }) {
                 "yyyy-MM-dd"
             );
             data["classification"] = classification;
-            data["userId"] = auth.id;
-            data["like"] = false;
+            // data["userId"] = auth.id;
             dispatch(toggleLoading(true));
 
-            const res = await axiosClient.put(`products${product.id}`, {
+            const res = await axiosClient.put(`products/${product.id}`, {
                 data,
             });
 
@@ -131,6 +127,7 @@ function ProductDetailScreen({ route, navigation }) {
             console.log("error", error);
             Alert.alert("Update product error !");
         }
+        dispatch(toggleLoading(false));
     };
 
     const handleDeleteProduct = () => {
@@ -249,7 +246,7 @@ function ProductDetailScreen({ route, navigation }) {
                             </Text>
                             <DatePicker
                                 getDate={setBestBeforeDay}
-                                mode="datetime"
+                                mode="date"
                             />
                         </View>
                         <View

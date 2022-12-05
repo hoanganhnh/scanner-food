@@ -33,8 +33,7 @@ function HistorycalScreen({ navigation }) {
                     expireDate: item.attributes.expireDate,
                     classification: item.attributes.classification,
                     bestBeforeDay: item.attributes.bestBeforeDay,
-                    image: item.attributes.image.data.attributes.formats.small
-                        .url,
+                    image: item.attributes.image.data.attributes.url,
                 }));
                 setProducts(_products);
                 dispatch(setMyProducts(_products));
@@ -42,7 +41,7 @@ function HistorycalScreen({ navigation }) {
         } catch (error) {
             console.log(error);
         }
-    }, [dispatch, auth.id]);
+    }, [dispatch, auth]);
 
     useFocusEffect(
         React.useCallback(() => {
