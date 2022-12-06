@@ -1,12 +1,15 @@
 import * as React from "react";
 import { SafeAreaView, ScrollView, View } from "react-native";
-import { Button, ListItem } from "react-native-elements";
+import { Badge, Button, ListItem } from "react-native-elements";
 import { useDispatch } from "react-redux";
 
 import { logout } from "../app/slices/auth";
+import { useNotifications } from "../contexts/notification";
 
 function SettingSreen({ navigation }) {
     const dispath = useDispatch();
+
+    const { badgeCount } = useNotifications();
 
     const handleLogout = () => {
         console.log("log out");
@@ -43,8 +46,22 @@ function SettingSreen({ navigation }) {
                             navigation.navigate("NotificationList");
                         }}
                     >
-                        <ListItem.Content>
+                        <ListItem.Content
+                            style={{
+                                flexDirection: "row",
+                                justifyContent: "space-between",
+                                alignItems: "center",
+                            }}
+                        >
                             <ListItem.Title>{"Notifications"}</ListItem.Title>
+                            {badgeCount > 0 && (
+                                <ListItem.Title>
+                                    <Badge
+                                        value={badgeCount}
+                                        status="primary"
+                                    />
+                                </ListItem.Title>
+                            )}
                         </ListItem.Content>
                         <ListItem.Chevron />
                     </ListItem>

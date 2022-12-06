@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import * as Notifications from "expo-notifications";
-import * as TaskManager from "expo-task-manager";
 
 import useAsyncStorage from "../hooks/useAsyncStorage";
 import { COLLECTION_NOTIFICATIONS } from "../constants/app";
@@ -60,6 +59,15 @@ const NotificationsContextProvider = ({ children }) => {
             ({ id }) => id !== notificationId
         );
         setNotifications(updatedNotifications);
+        setBadgeCount((prevCount) => {
+            const count = prevCount - 1;
+            if (count <= 0) {
+                return 0;
+            }
+            return count;
+        });
+        // set badge number on app icon
+        await Notifications.setBadgeCountAsync(badgeCount - 1);
         await saveItemInStorage(COLLECTION_NOTIFICATIONS, updatedNotifications);
     };
 
@@ -84,10 +92,6 @@ const NotificationsContextProvider = ({ children }) => {
             if (!isNotificationAlreadySaved) {
                 const newNotification = {
                     id: notificationObject.messageId,
-                    date: notificationObject.sentTime,
-                    title: notificationObject.data.title,
-                    body: `${notificationObject.data.message}Solinca`,
-                    data: JSON.parse(notificationObject.data.body),
                 };
 
                 setBadgeCount((prevCount) => prevCount + 1);
@@ -108,7 +112,8 @@ const NotificationsContextProvider = ({ children }) => {
             }
             !!navigationAction && (await navigationAction());
         } catch (error) {
-            console.log("handleNewNotification", error);
+            console.log("handleNewNotification");
+            console.log(error);
         }
     };
 
@@ -117,31 +122,25 @@ const NotificationsContextProvider = ({ children }) => {
         await Notifications.setBadgeCountAsync(0);
     };
 
-    const BACKGROUND_NOTIFICATION_TASK = "BACKGROUND-NOTIFICATION-TASK";
-
-    TaskManager.defineTask(
-        BACKGROUND_NOTIFICATION_TASK,
-        // eslint-disable-next-line no-unused-vars
-        ({ data, error, executionInfo }) =>
-            handleNewNotification(data.notification)
-    );
-
     useEffect(() => {
         fetchNotifications();
-        Notifications.registerTaskAsync(BACKGROUND_NOTIFICATION_TASK);
 
         const foregroundReceivedNotificationSubscription =
             // listener fired whenever a notification is received while the app is foregrounded
             Notifications.addNotificationReceivedListener((notification) => {
+                const { productId, userId, messageId } =
+                    notification.request.trigger.payload.body;
                 // notification.request.trigger.remoteMessage
-                handleNewNotification(
-                    notification.request.trigger.remoteMessage
-                );
+                const notificationObject = {
+                    userId,
+                    productId,
+                    messageId,
+                };
+                handleNewNotification(notificationObject);
             });
 
         return () => {
             foregroundReceivedNotificationSubscription.remove();
-            Notifications.unregisterTaskAsync(BACKGROUND_NOTIFICATION_TASK);
         };
     }, []);
 

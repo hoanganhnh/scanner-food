@@ -9,17 +9,20 @@ import {
     Alert,
     Text,
 } from "react-native";
-import { Icon, ListItem } from "react-native-elements";
+import { Badge, Icon, ListItem } from "react-native-elements";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 
 import { selectAuth } from "../app/slices/auth";
 import axiosClient from "../services/axiosClient";
 import { timeAgo } from "../utils/time";
+import { useNotifications } from "../contexts/notification";
 
 function NotificationListScreen() {
     const [notifications, setNotifications] = React.useState([]);
     const [loading, setLoading] = React.useState(false);
 
+    const { notifications: notificationContexts, deleteNotification } =
+        useNotifications();
     const { auth } = useSelector(selectAuth);
 
     const navigation = useNavigation();
@@ -132,17 +135,34 @@ function NotificationListScreen() {
                     data={notifications}
                     keyExtractor={(a) => a.id}
                     renderItem={({ item }) => {
+                        const isNew =
+                            notificationContexts.filter(
+                                (noti) => noti.id === item.id
+                            ).length === 1;
+
                         return (
                             <ListItem
                                 bottomDivider
-                                onPress={() =>
-                                    swicthToProductDetail(item.productId)
-                                }
+                                onPress={() => {
+                                    swicthToProductDetail(item.productId);
+                                    deleteNotification(item.id);
+                                }}
                             >
                                 <ListItem.Content>
-                                    <ListItem.Title style={{ marginBottom: 4 }}>
-                                        {item.message}
-                                    </ListItem.Title>
+                                    <View
+                                        style={{
+                                            flexDirection: "row",
+                                            justifyContent: "space-between",
+                                            width: "100%",
+                                        }}
+                                    >
+                                        <ListItem.Title
+                                            style={{ marginBottom: 4 }}
+                                        >
+                                            {item.message}
+                                        </ListItem.Title>
+                                        {isNew && <Badge status="primary" />}
+                                    </View>
                                     <View style={styles.row}>
                                         <View
                                             style={{
