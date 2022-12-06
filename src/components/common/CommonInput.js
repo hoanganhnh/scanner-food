@@ -3,7 +3,6 @@ import { View, TextInput, StyleSheet } from "react-native";
 
 import { Color } from "../../styles/color";
 import { FontSize } from "../../styles/spacing";
-import { Device } from "../../styles/values";
 import { CommonText } from "./CommonText";
 
 export function CommonInput(props) {
@@ -57,13 +56,6 @@ export function CommonInput(props) {
                             fontWeight: "500",
                             height: label ? (multiline ? 100 : 45) : 50,
                         },
-                        Device.isIos
-                            ? {
-                                  fontFamily: Device.isIos
-                                      ? "Noto Sans JP"
-                                      : "NotoSansJP-Regular",
-                              }
-                            : {},
                     ]}
                     {...rest}
                 />

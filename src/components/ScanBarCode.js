@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Button, Text, View, StyleSheet, Vibration } from "react-native";
+import { Button, Text, View, StyleSheet, Vibration, Alert } from "react-native";
 import { BarCodeScanner } from "expo-barcode-scanner";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import { insertProduct } from "../utils/database";
-import { OPEN_API_FOOD } from "../constants";
+import axiosClient from "../services/axiosClient";
+import { useNavigation } from "@react-navigation/native";
 
-function ScanBarCode({ navigation }) {
-    const [hasPermission, setHasPermission] = useState(null);
+function ScanBarCode() {
+    const [hasPermission, setHasPermission] = useState(false);
     const [scanned, setScanned] = useState(false);
+
+    const navigation = useNavigation();
 
     useEffect(() => {
         (async () => {
@@ -17,42 +18,39 @@ function ScanBarCode({ navigation }) {
         })();
     }, []);
 
-    const saveProduct = async (id_product, api_res) => {
-        try {
-            insertProduct(id_product.toString(), true, false);
-            storeData(api_res.product._id, JSON.stringify(api_res.product));
-        } catch (error) {
-            console.error(`error saving the product in history: ${error}`);
-        }
-    };
-
-    const storeData = async (key, value) => {
-        try {
-            await AsyncStorage.setItem(key, value);
-        } catch (error) {
-            console.error(`error saving the product in history: ${error}`);
-        }
-    };
-
-    const handleBarCodeScanned = ({ _, data }) => {
+    const handleBarCodeScanned = async ({ _, data }) => {
         setScanned(true);
         Vibration.vibrate();
 
-        fetch(`${OPEN_API_FOOD}/${data}.json`)
-            .then((response) => response.json())
-            .then((json) => {
-                if (json.status_verbose === "product found") {
-                    saveProduct(json.product._id, json);
-                    navigation.navigate("Product", {
-                        item: json.product,
+        if (data) {
+            try {
+                const { data: products } = await axiosClient.get(
+                    `product-bases?populate=image&filters[code][$eq]=${data}`
+                );
+                if (products.data.length) {
+                    const product = products.data[0];
+                    const productScan = {
+                        expireDate: product.attributes.expireDate,
+                        name: product.attributes.name,
+                        image: product.attributes.image.data.attributes.url,
+                    };
+
+                    navigation.navigate("AddNewProductStack", {
+                        screen: "AddNewProduct",
+                        params: {
+                            productScan,
+                        },
                     });
                 } else {
-                    alert("Product not found");
+                    Alert.alert("Not found product with ", data);
                 }
-            })
-            .catch((error) => {
-                console.error(error);
-            });
+            } catch (error) {
+                console.log("handleBarCodeScanned");
+                console.log(error);
+            }
+        } else {
+            Alert.alert("Error scan !");
+        }
     };
 
     if (hasPermission === null) {

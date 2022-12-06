@@ -12,7 +12,7 @@ import {
 import { Icon, Input, Button } from "react-native-elements";
 import { SelectList } from "react-native-dropdown-select-list";
 import * as ImagePicker from "expo-image-picker";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
 import {
     differenceInSeconds,
@@ -36,19 +36,52 @@ LogBox.ignoreLogs([
 ]);
 
 function AddProductSreen() {
-    const [image, setImage] = React.useState(null);
+    let route = useRoute();
+
+    // TODO: test this
+    const { productScan } = route?.params || {};
+
+    const [image, setImage] = React.useState(productScan?.image || "");
     const [file, setFile] = React.useState({});
     const [classification, setClassification] = React.useState("");
     const [purchaseDate, setPurchaseDate] = React.useState("");
-    const [expireDate, setExpireDate] = React.useState("");
-    const [nameProduct, setNameProduct] = React.useState("");
+    const [expireDate, setExpireDate] = React.useState(
+        productScan?.expireDate ? new Date(productScan?.expireDate) : ""
+    );
+    const [nameProduct, setNameProduct] = React.useState(
+        productScan?.name || ""
+    );
     const [bestBeforeDay, setBestBeforeDay] = React.useState("");
 
     const [showCamera, setShowCamera] = React.useState(false);
 
+    React.useEffect(() => {
+        if (productScan) {
+            if (productScan.image) {
+                setImage(productScan.image);
+                const file = getImageUpload(productScan.image);
+                setFile(file);
+            }
+            if (productScan.expireDate) {
+                setExpireDate(new Date(productScan.expireDate));
+            }
+            if (productScan.name) {
+                setNameProduct(productScan.name);
+            }
+        }
+    }, [productScan]);
+
     const { auth } = useSelector(selectAuth);
     const dispatch = useDispatch();
     const navigation = useNavigation();
+
+    const getImageUpload = (localUri) => {
+        const filename = localUri.split("/").pop();
+        // Infer the type of the image
+        const match = /\.(\w+)$/.exec(filename);
+        const type = match ? `image/${match[1]}` : `image`;
+        return { uri: localUri, name: filename, type };
+    };
 
     const pickImage = async () => {
         try {
@@ -58,12 +91,8 @@ function AddProductSreen() {
                 quality: 1,
             });
             if (!result.canceled) {
-                const localUri = result.uri;
-                const filename = localUri.split("/").pop();
-                // Infer the type of the image
-                const match = /\.(\w+)$/.exec(filename);
-                const type = match ? `image/${match[1]}` : `image`;
-                setFile({ uri: localUri, name: filename, type });
+                const file = getImageUpload(result.uri);
+                setFile(file);
                 setImage(result.uri);
             }
         } catch (error) {
@@ -178,12 +207,8 @@ function AddProductSreen() {
 
     const getImageFromCamera = (image) => {
         if (image) {
-            const localUri = image.uri;
-            const filename = localUri.split("/").pop();
-            const match = /\.(\w+)$/.exec(filename);
-            const type = match ? `image/${match[1]}` : `image`;
-
-            setFile({ uri: localUri, name: filename, type });
+            const file = getImageUpload(image.uri);
+            setFile(file);
             setImage(image.uri);
             offCamera();
         }
@@ -264,7 +289,6 @@ function AddProductSreen() {
                             setSelected={(val) => setClassification(val)}
                             data={classificationData}
                             save="value"
-                            onSelect={() => console.log(classification)}
                             placeholder="Classification"
                         />
                         <View

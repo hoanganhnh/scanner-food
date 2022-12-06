@@ -42,8 +42,30 @@ function ProductDetailScreen({ route, navigation }) {
         product.bestBeforeDay
     );
     const [nameProduct, setNameProduct] = React.useState(product.name);
-    // TODO: handle like product
     const [favorite, setFavorite] = React.useState(product.like);
+
+    React.useLayoutEffect(() => {
+        if (product.image) {
+            setImage(route.params.product.image);
+        }
+        if (product.classification) {
+            setClassification(product.classification);
+        }
+        if (product.purchaseDate) {
+            setPurchaseDate(product.purchaseDate);
+        }
+        if (product.expireDate) {
+            setExpireDate(product.expireDate);
+        }
+        if (product.bestBeforeDay) {
+            setBestBeforeDay(product.bestBeforeDay);
+        }
+
+        if (product.name) {
+            setNameProduct(product.name);
+        }
+        setFavorite(product.like);
+    }, [product]);
 
     const dispatch = useDispatch();
 
@@ -222,7 +244,6 @@ function ProductDetailScreen({ route, navigation }) {
                             setSelected={(val) => setClassification(val)}
                             data={classificationData}
                             save="value"
-                            onSelect={() => console.log(classification)}
                             placeholder="Classification"
                             defaultOption={classificationData.find(
                                 (item) => item.value === product.classification
