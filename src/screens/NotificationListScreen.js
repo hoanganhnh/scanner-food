@@ -108,6 +108,7 @@ function NotificationListScreen() {
                 classification: data.attributes.classification,
                 name: data.attributes.name,
                 userId: data.attributes.userId,
+                label: data.attributes.label,
                 image: data.attributes.image.data.attributes.url,
             };
 

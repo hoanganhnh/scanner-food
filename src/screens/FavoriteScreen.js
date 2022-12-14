@@ -8,6 +8,8 @@ import { Ionicons, AntDesign } from "@expo/vector-icons";
 import { selectAuth } from "../app/slices/auth";
 import { FlatList } from "react-native";
 import axiosClient from "../services/axiosClient";
+import { LABELS } from "../constants/label";
+import { format } from "date-fns";
 
 function FavoriteScreen() {
     const [products, setProducts] = React.useState([]);
@@ -34,6 +36,7 @@ function FavoriteScreen() {
                     classification: item.attributes.classification,
                     bestBeforeDay: item.attributes.bestBeforeDay,
                     like: item.attributes.like,
+                    label: item.attributes.label,
                     image: item.attributes.image.data.attributes.url,
                 }));
                 setProducts(_products);
@@ -88,9 +91,19 @@ function FavoriteScreen() {
                                             Time:
                                         </Text>
                                         <View style={{ flexDirection: "row" }}>
-                                            <Text>{item.purchaseDate}</Text>
+                                            <Text>
+                                                {format(
+                                                    new Date(item.purchaseDate),
+                                                    "dd/MM/yyyy"
+                                                )}
+                                            </Text>
                                             <Text>{" - "}</Text>
-                                            <Text>{item.expireDate}</Text>
+                                            <Text>
+                                                {format(
+                                                    new Date(item.expireDate),
+                                                    "dd/MM/yyyy"
+                                                )}
+                                            </Text>
                                         </View>
                                     </View>
                                 </View>
@@ -107,9 +120,30 @@ function FavoriteScreen() {
                                         color="black"
                                         style={{ marginRight: 4 }}
                                     />
-                                    <Text>
-                                        Classification: {item.classification}
-                                    </Text>
+                                    <View
+                                        style={{
+                                            flexDirection: "row",
+                                            justifyContent: "space-between",
+                                            alignItems: "center",
+                                        }}
+                                    >
+                                        <Text>
+                                            Classification:{" "}
+                                            {item.classification}
+                                        </Text>
+                                        <Text style={{ marginLeft: 24 }}>
+                                            Label:{" "}
+                                            <View
+                                                style={{
+                                                    backgroundColor:
+                                                        LABELS[item.label],
+                                                    width: 24,
+                                                    height: 12,
+                                                    borderRadius: 30,
+                                                }}
+                                            />
+                                        </Text>
+                                    </View>
                                 </View>
                                 <Button
                                     buttonStyle={{

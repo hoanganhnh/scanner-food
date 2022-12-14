@@ -30,6 +30,8 @@ import { toggleLoading } from "../app/slices/loading";
 import DatePicker from "../components/DatePicker";
 import axiosClient from "../services/axiosClient";
 import CameraExpo from "../components/CameraExpo";
+import LabelColorItem from "../components/LabelColorItem";
+import { LABELS } from "../constants/label";
 
 LogBox.ignoreLogs([
     "Non-serializable values were found in the navigation state",
@@ -52,6 +54,7 @@ function AddProductSreen() {
         productScan?.name || ""
     );
     const [bestBeforeDay, setBestBeforeDay] = React.useState("");
+    const [label, setLabel] = React.useState("");
 
     const [showCamera, setShowCamera] = React.useState(false);
 
@@ -76,6 +79,7 @@ function AddProductSreen() {
     const navigation = useNavigation();
 
     const getImageUpload = (localUri) => {
+        if (!localUri) return;
         const filename = localUri.split("/").pop();
         // Infer the type of the image
         const match = /\.(\w+)$/.exec(filename);
@@ -170,6 +174,7 @@ function AddProductSreen() {
             data["classification"] = classification;
             data["userId"] = auth.id;
             data["like"] = false;
+            data["label"] = label;
             dispatch(toggleLoading(true));
 
             const formdata = new FormData();
@@ -195,7 +200,8 @@ function AddProductSreen() {
             }
         } catch (error) {
             dispatch(toggleLoading(false));
-            console.log("error", error);
+            console.log("Add product");
+            console.log(error);
             Alert.alert("Add product error !");
         }
         dispatch(toggleLoading(false));
@@ -216,6 +222,10 @@ function AddProductSreen() {
 
     const offCamera = () => {
         setShowCamera(false);
+    };
+
+    const onChooseLabel = (type) => {
+        setLabel(type);
     };
 
     return (
@@ -256,6 +266,29 @@ function AddProductSreen() {
                             onChangeText={handleChangeNameProduct}
                             placeholder="Name product..."
                         />
+                        <View style={{}}>
+                            <Text style={{ fontSize: 16, marginVertical: 12 }}>
+                                Label: {label}
+                            </Text>
+                            <View style={{ flexDirection: "row" }}>
+                                <LabelColorItem
+                                    onChooseLabel={() => onChooseLabel("red")}
+                                    color={LABELS.red}
+                                    style={{ marginRight: 16 }}
+                                />
+                                <LabelColorItem
+                                    onChooseLabel={() => onChooseLabel("blue")}
+                                    color={LABELS.blue}
+                                    style={{ marginRight: 16 }}
+                                />
+                                <LabelColorItem
+                                    onChooseLabel={() =>
+                                        onChooseLabel("yellow")
+                                    }
+                                    color={LABELS.yellow}
+                                />
+                            </View>
+                        </View>
                         <View
                             style={{
                                 flexDirection: "row",

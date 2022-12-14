@@ -20,15 +20,40 @@
             "googleServicesFile": "./google-services.json",
             "package": "com.hoanganh.bestbefore",
             "adaptiveIcon": {
-                "foregroundImage": "./assets/favicon.png",
+                "foregroundImage": "./assets/adaptive-icon.png",
                 "backgroundColor": "#ffffff"
-            }
+            },
+            "icon": "./assets/notification-icon.png",
+            "useNextNotificationsApi": false
         },
         "ios": {
-            "supportsTablet": true
+            "supportsTablet": true,
+            "infoPlist": {
+                "UIBackgroundModes": "remote-notification"
+            }
         },
         "web": {
             "favicon": "./assets/favicon.png"
-        }
+        },
+        "notification": {
+            "icon": "./assets/notification-icon.png",
+            "color": "#ffffff",
+            "androidMode": "default",
+            "androidCollapsedTitle": "Best Before",
+            "iosDisplayInForeground": true
+        },
+        "plugins": [
+            [
+                "expo-notifications",
+                {
+                    "icon": "./assets/notification-icon.png",
+                    "color": "#ffffff",
+                    "androidCollapsedTitle": "Best Before",
+                    "androidMode": "default",
+                    "sounds": [],
+                    "iosDisplayInForeground": true
+                }
+            ]
+        ]
     }
 }

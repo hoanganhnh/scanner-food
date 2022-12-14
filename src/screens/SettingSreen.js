@@ -75,6 +75,16 @@ function SettingSreen({ navigation }) {
                         </ListItem.Content>
                         <ListItem.Chevron />
                     </ListItem>
+                    <ListItem
+                        onPress={() => {
+                            navigation.navigate("AlarmScreen");
+                        }}
+                    >
+                        <ListItem.Content>
+                            <ListItem.Title>{"Alarm"}</ListItem.Title>
+                        </ListItem.Content>
+                        <ListItem.Chevron />
+                    </ListItem>
                     <Button
                         title="Log out"
                         buttonStyle={{

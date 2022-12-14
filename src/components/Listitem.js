@@ -4,6 +4,7 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import { format } from "date-fns";
 
 import { globalStyles } from "../styles/global";
+import { LABELS } from "../constants/label";
 
 class ListItem extends React.Component {
     goTo(item) {
@@ -25,10 +26,24 @@ class ListItem extends React.Component {
                     <View style={styles.contentItem}>
                         <TouchableOpacity
                             onPress={() => this.goTo(this.props.item)}
+                            style={{
+                                flexDirection: "row",
+                                justifyContent: "space-between",
+                                alignItems: "center",
+                            }}
                         >
                             <Text style={globalStyles.itemListTitle}>
                                 {this.props.item.name.toUpperCase()}
                             </Text>
+                            <View
+                                style={{
+                                    backgroundColor:
+                                        LABELS[this.props.item.label],
+                                    width: 24,
+                                    height: 12,
+                                    borderRadius: 30,
+                                }}
+                            />
                         </TouchableOpacity>
                         <Text style={globalStyles.itemListRating}>
                             Time expiry:{" "}
@@ -72,7 +87,6 @@ const styles = StyleSheet.create({
     },
 
     contentItem: {
-        width: "100%",
         marginLeft: 16,
     },
 });

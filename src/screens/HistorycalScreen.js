@@ -40,6 +40,7 @@ function HistorycalScreen({ navigation }) {
                     classification: item.attributes.classification,
                     bestBeforeDay: item.attributes.bestBeforeDay,
                     like: item.attributes.like,
+                    label: item.attributes.label,
                     createdAt: item.attributes.createdAt,
                     image: item.attributes.image.data.attributes.url,
                 }));

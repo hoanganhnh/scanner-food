@@ -25,6 +25,8 @@ import { classificationData } from "../constants/classifications";
 import DatePicker from "../components/DatePicker";
 import axiosClient from "../services/axiosClient";
 import { toggleLoading } from "../app/slices/loading";
+import LabelColorItem from "../components/LabelColorItem";
+import { LABELS } from "../constants/label";
 
 function ProductDetailScreen({ route, navigation }) {
     const { product } = route.params;
@@ -43,6 +45,9 @@ function ProductDetailScreen({ route, navigation }) {
     );
     const [nameProduct, setNameProduct] = React.useState(product.name);
     const [favorite, setFavorite] = React.useState(product.like);
+    const [label, setLabel] = React.useState(() =>
+        product.label === null ? "" : product.label
+    );
 
     React.useLayoutEffect(() => {
         if (product.image) {
@@ -63,6 +68,9 @@ function ProductDetailScreen({ route, navigation }) {
 
         if (product.name) {
             setNameProduct(product.name);
+        }
+        if (product.label) {
+            setLabel(product.label);
         }
         setFavorite(product.like);
     }, [product]);
@@ -135,6 +143,8 @@ function ProductDetailScreen({ route, navigation }) {
             );
             data["classification"] = classification;
             data["like"] = favorite;
+            data["label"] = label;
+
             dispatch(toggleLoading(true));
 
             const res = await axiosClient.put(`products/${product.id}`, {
@@ -191,6 +201,10 @@ function ProductDetailScreen({ route, navigation }) {
         dispatch(toggleLoading(false));
     };
 
+    const onChooseLabel = (type) => {
+        setLabel(type);
+    };
+
     return (
         <View style={styles.wrapper}>
             <SafeAreaView>
@@ -208,6 +222,29 @@ function ProductDetailScreen({ route, navigation }) {
                             onChangeText={handleChangeNameProduct}
                             placeholder="Name product..."
                         />
+                        <View style={{}}>
+                            <Text style={{ fontSize: 16, marginVertical: 12 }}>
+                                Label: {label}
+                            </Text>
+                            <View style={{ flexDirection: "row" }}>
+                                <LabelColorItem
+                                    onChooseLabel={() => onChooseLabel("red")}
+                                    color={LABELS.red}
+                                    style={{ marginRight: 16 }}
+                                />
+                                <LabelColorItem
+                                    onChooseLabel={() => onChooseLabel("blue")}
+                                    color={LABELS.blue}
+                                    style={{ marginRight: 16 }}
+                                />
+                                <LabelColorItem
+                                    onChooseLabel={() =>
+                                        onChooseLabel("yellow")
+                                    }
+                                    color={LABELS.yellow}
+                                />
+                            </View>
+                        </View>
                         <View
                             style={{
                                 flexDirection: "row",

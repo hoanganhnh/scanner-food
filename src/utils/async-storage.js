@@ -14,5 +14,6 @@ export const getData = async (key) => {
         return data;
     } catch (error) {
         console.error(`error when getting products ids: ${error}`);
+        return null;
     }
 };

@@ -128,13 +128,12 @@ const NotificationsContextProvider = ({ children }) => {
         const foregroundReceivedNotificationSubscription =
             // listener fired whenever a notification is received while the app is foregrounded
             Notifications.addNotificationReceivedListener((notification) => {
-                const { productId, userId, messageId } =
-                    notification.request.trigger.payload.body;
-                // notification.request.trigger.remoteMessage
+                const data = JSON.parse(
+                    notification.request.trigger.remoteMessage.data.body
+                );
+
                 const notificationObject = {
-                    userId,
-                    productId,
-                    messageId,
+                    messageId: data.messageId,
                 };
                 handleNewNotification(notificationObject);
             });
