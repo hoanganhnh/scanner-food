@@ -20,11 +20,11 @@ import ProductDetailScreen from "../screens/ProductDetailScreen";
 import { isAuthenticated } from "../app/slices/auth";
 import LinkingConfiguration from "./LinkingConfiguration";
 import AppProvider from "../contexts/app-provider";
-import ItemScreen from "../screens/ItemScreen";
 import MealScreen from "../screens/MealScreen";
 import MealDetailScreen from "../screens/MealDetailScreen";
 import NotificationListScreen from "../screens/NotificationListScreen";
 import PolicyScreen from "../screens/PolicyScreen";
+import AlarmScreen from "../screens/AlarmScreen";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -36,11 +36,6 @@ function HomeStack() {
                 options={{ headerShown: false }}
                 name="Home"
                 component={HomeScreen}
-            />
-            <Stack.Screen
-                name="ItemScreen"
-                options={{ title: "Add my Ingredients" }}
-                component={ItemScreen}
             />
             <Stack.Screen
                 name="MealScreen"
@@ -92,6 +87,11 @@ function SettingStack() {
                 name="PolicyScreen"
                 component={PolicyScreen}
                 options={{ title: "Privacy Policy" }}
+            />
+            <Stack.Screen
+                name="AlarmScreen"
+                component={AlarmScreen}
+                options={{ title: "My Alarm" }}
             />
         </Stack.Navigator>
     );

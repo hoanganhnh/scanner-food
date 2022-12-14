@@ -24,3 +24,17 @@ export async function scheduleAndCancel(date) {
         console.log(error);
     }
 }
+export async function scheduleNotification({ date, title, body }) {
+    try {
+        const identifier = await Notifications.scheduleNotificationAsync({
+            content: {
+                title: title,
+                body: body,
+            },
+            trigger: { date: new Date(date) },
+        });
+        console.log("identifier", identifier);
+    } catch (error) {
+        console.log(error);
+    }
+}

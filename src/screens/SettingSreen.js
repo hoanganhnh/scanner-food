@@ -67,21 +67,21 @@ function SettingSreen({ navigation }) {
                     </ListItem>
                     <ListItem
                         onPress={() => {
-                            navigation.navigate("PolicyScreen");
-                        }}
-                    >
-                        <ListItem.Content>
-                            <ListItem.Title>{"Privacy Policy"}</ListItem.Title>
-                        </ListItem.Content>
-                        <ListItem.Chevron />
-                    </ListItem>
-                    <ListItem
-                        onPress={() => {
                             navigation.navigate("AlarmScreen");
                         }}
                     >
                         <ListItem.Content>
                             <ListItem.Title>{"Alarm"}</ListItem.Title>
+                        </ListItem.Content>
+                        <ListItem.Chevron />
+                    </ListItem>
+                    <ListItem
+                        onPress={() => {
+                            navigation.navigate("PolicyScreen");
+                        }}
+                    >
+                        <ListItem.Content>
+                            <ListItem.Title>{"Privacy Policy"}</ListItem.Title>
                         </ListItem.Content>
                         <ListItem.Chevron />
                     </ListItem>
