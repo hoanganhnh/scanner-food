@@ -13,7 +13,7 @@ import { Badge, Icon, ListItem } from "react-native-elements";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 
 import { selectAuth } from "../app/slices/auth";
-import axiosClient from "../services/axiosClient";
+import axiosAuthen from "../services/axiosAuthen";
 import { timeAgo } from "../utils/time";
 import { useNotifications } from "../contexts/notification";
 
@@ -30,7 +30,7 @@ function NotificationListScreen() {
     const getNotfications = async () => {
         setLoading(true);
         try {
-            const { data } = await axiosClient.get(
+            const { data } = await axiosAuthen.get(
                 `/notifications?filters[userId][$eq]=${auth.id}`
             );
             const _notifications = data.data.map((item) => ({
@@ -62,7 +62,7 @@ function NotificationListScreen() {
                         onPress: async () => {
                             console.log("delete notification id", id);
                             try {
-                                const res = await axiosClient.delete(
+                                const res = await axiosAuthen.delete(
                                     `notifications/${id}`
                                 );
 
@@ -98,7 +98,7 @@ function NotificationListScreen() {
         try {
             const {
                 data: { data },
-            } = await axiosClient.get(`products/${id}?populate=image`);
+            } = await axiosAuthen.get(`products/${id}?populate=image`);
 
             const product = {
                 id: data.id,

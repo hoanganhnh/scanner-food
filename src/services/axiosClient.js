@@ -9,10 +9,4 @@ const axiosClient = axios.create({
     },
 });
 
-// axiosClient.interceptors.request.use(async (request) => {
-//     const token = store.getState().auth.accessToken;
-//     request.headers["Authorization"] = token;
-//     return request;
-// });
-
 export default axiosClient;

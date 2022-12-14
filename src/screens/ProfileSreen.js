@@ -1,13 +1,44 @@
 import React from "react";
-import { StyleSheet, Text, View, ScrollView, SafeAreaView } from "react-native";
+import {
+    StyleSheet,
+    Text,
+    View,
+    ScrollView,
+    SafeAreaView,
+    Alert,
+} from "react-native";
 import { Avatar, Button, Input } from "react-native-elements";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
-import { selectAuth } from "../app/slices/auth";
+import { selectAuth, setAuth } from "../app/slices/auth";
+import axiosClient from "../services/axiosAuthen";
 
-// TODO: create update profile
 export default function ProfileScreen() {
     const { auth } = useSelector(selectAuth);
+
+    const [age, setAge] = React.useState(auth.age);
+    const [address, setAddress] = React.useState(auth.address);
+    const [phone, setPhone] = React.useState(auth.phone);
+
+    const dispath = useDispatch();
+
+    const updateProfile = async () => {
+        try {
+            const data = {
+                age,
+                address,
+                phone,
+            };
+            const { status } = await axiosClient.post("/users/update-me", data);
+
+            if (status === 200) {
+                dispath(setAuth({ ...auth, ...data }));
+                Alert.alert("Save profile successfull");
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
     return (
         <SafeAreaView style={styles.container}>
@@ -31,11 +62,23 @@ export default function ProfileScreen() {
                         </View>
                         <View style={{ paddingHorizontal: 20 }}>
                             <Text style={styles.label}>Age</Text>
-                            <Input placeholder="Age" />
+                            <Input
+                                placeholder="Age"
+                                value={age.toString()}
+                                onChangeText={setAge}
+                            />
                             <Text style={styles.label}>Phone</Text>
-                            <Input placeholder="Phone" />
+                            <Input
+                                placeholder="Phone"
+                                value={phone}
+                                onChangeText={setPhone}
+                            />
                             <Text style={styles.label}>Address</Text>
-                            <Input placeholder="Address" />
+                            <Input
+                                placeholder="Address"
+                                value={address}
+                                onChangeText={setAddress}
+                            />
                         </View>
                         <Button
                             title="Save"
@@ -49,6 +92,7 @@ export default function ProfileScreen() {
                                 marginHorizontal: 20,
                                 marginVertical: 24,
                             }}
+                            onPress={updateProfile}
                         />
                     </View>
                 </View>
