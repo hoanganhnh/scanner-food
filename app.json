@@ -1,6 +1,6 @@
 {
     "expo": {
-        "name": "com.hoanganh.bestbefore",
+        "name": "bestbefore",
         "slug": "bestbefore",
         "version": "1.0.0",
         "orientation": "portrait",
@@ -30,7 +30,8 @@
             "supportsTablet": true,
             "infoPlist": {
                 "UIBackgroundModes": "remote-notification"
-            }
+            },
+            "bundleIdentifier": "com.hoanganh.bestbefore"
         },
         "web": {
             "favicon": "./assets/favicon.png"
@@ -54,6 +55,11 @@
                     "iosDisplayInForeground": true
                 }
             ]
-        ]
+        ],
+        "extra": {
+            "eas": {
+                "projectId": "8b7b8bc2-4b5a-414e-bde7-ead85c20393a"
+            }
+        }
     }
 }

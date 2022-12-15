@@ -16,9 +16,13 @@ import axiosClient from "../services/axiosAuthen";
 export default function ProfileScreen() {
     const { auth } = useSelector(selectAuth);
 
-    const [age, setAge] = React.useState(auth.age);
-    const [address, setAddress] = React.useState(auth.address);
-    const [phone, setPhone] = React.useState(auth.phone);
+    const [age, setAge] = React.useState(() => (auth.age ? auth.age : ""));
+    const [address, setAddress] = React.useState(() =>
+        auth.address ? auth.address : ""
+    );
+    const [phone, setPhone] = React.useState(() =>
+        auth.phone ? auth.phone : ""
+    );
 
     const dispath = useDispatch();
 

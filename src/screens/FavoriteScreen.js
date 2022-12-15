@@ -131,18 +131,20 @@ function FavoriteScreen() {
                                             Classification:{" "}
                                             {item.classification}
                                         </Text>
-                                        <Text style={{ marginLeft: 24 }}>
-                                            Label:{" "}
-                                            <View
-                                                style={{
-                                                    backgroundColor:
-                                                        LABELS[item.label],
-                                                    width: 24,
-                                                    height: 12,
-                                                    borderRadius: 30,
-                                                }}
-                                            />
-                                        </Text>
+                                        {LABELS[item.label] && (
+                                            <Text style={{ marginLeft: 24 }}>
+                                                Label:{" "}
+                                                <View
+                                                    style={{
+                                                        backgroundColor:
+                                                            LABELS[item.label],
+                                                        width: 24,
+                                                        height: 12,
+                                                        borderRadius: 30,
+                                                    }}
+                                                />
+                                            </Text>
+                                        )}
                                     </View>
                                 </View>
                                 <Button

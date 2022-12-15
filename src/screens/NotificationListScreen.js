@@ -158,7 +158,9 @@ function NotificationListScreen() {
                                         }}
                                     >
                                         <ListItem.Title
-                                            style={{ marginBottom: 4 }}
+                                            style={{
+                                                marginBottom: 4,
+                                            }}
                                         >
                                             {item.message}
                                         </ListItem.Title>
