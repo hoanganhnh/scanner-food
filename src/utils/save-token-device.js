@@ -1,15 +1,31 @@
+import { Alert } from "react-native";
+import { openSettings } from "expo-linking";
+
 import axiosClient from "../services/axiosClient";
-import { getData } from "./async-storage";
 
 export const handleSaveTokenDevice = async (token, userId) => {
     try {
+        if (!token) {
+            Alert.alert(
+                "Error",
+                "To enable Push Notifications please change your settings.",
+                [
+                    {
+                        text: "OK",
+                    },
+                    {
+                        text: "Open Settings",
+                        onPress: openSettings,
+                    },
+                ]
+            );
+        }
         const { data } = await axiosClient.get(
             `token-devices?filters[userId][$eq]=${userId}`
         );
-        const existToken = await getData("TOKEN_DEIVCE");
 
         if (data?.data.length > 0) {
-            if (data?.data[0]?.attributes.token !== existToken) {
+            if (data?.data[0]?.attributes.token !== token) {
                 console.log("delete token");
                 await axiosClient.delete(`token-devices/${data?.data[0].id}`);
                 const res = await axiosClient.post("token-devices", {

@@ -1,6 +1,7 @@
 import * as Notifications from "expo-notifications";
-import { Alert, Platform } from "react-native";
+import { Alert } from "react-native";
 import { openSettings, openURL } from "expo-linking";
+
 import { storeData } from "../utils/async-storage";
 
 export const useNotifications = () => {
@@ -33,15 +34,6 @@ export const useNotifications = () => {
         const token = (await Notifications.getExpoPushTokenAsync()).data;
         console.log("token-device -->", token);
         await storeData("TOKEN_DEIVCE", token);
-
-        if (Platform.OS === "android") {
-            Notifications.setNotificationChannelAsync("default", {
-                name: "default",
-                importance: Notifications.AndroidImportance.MAX,
-                vibrationPattern: [0, 250, 250, 250],
-                lightColor: "#FF231F7C",
-            });
-        }
     };
 
     // This listener is fired whenever a notification is received while the app is foregrounded
