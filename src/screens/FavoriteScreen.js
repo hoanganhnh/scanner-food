@@ -52,11 +52,8 @@ function FavoriteScreen() {
         }, [])
     );
     const switchDetailProduct = (product) => {
-        navigation.navigate("HistoryStack", {
-            screen: "Product",
-            params: {
-                product,
-            },
+        navigation.navigate("Product", {
+            product: product,
         });
     };
     return (
@@ -73,7 +70,9 @@ function FavoriteScreen() {
                                     }}
                                     style={{ height: 400, width: "100%" }}
                                 />
-                                <Card.Title>{item.name}</Card.Title>
+                                <Card.Title style={{ marginTop: 12 }}>
+                                    {item.name}
+                                </Card.Title>
                                 <View>
                                     <View
                                         style={{
@@ -174,9 +173,10 @@ function FavoriteScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+    },
+    item: {
         paddingVertical: 16,
     },
-    item: {},
     mainHeading: {
         justifyContent: "center",
         alignItems: "center",
