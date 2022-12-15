@@ -156,7 +156,8 @@ function ProductDetailScreen({ route, navigation }) {
             }
         } catch (error) {
             dispatch(toggleLoading(false));
-            console.log("error", error);
+            console.log("error update product");
+            console.log(error);
             Alert.alert("Update product error !");
         }
         dispatch(toggleLoading(false));

@@ -181,15 +181,21 @@ function AddProductSreen() {
             formdata.append("data", JSON.stringify(data));
             formdata.append("files.image", file);
 
-            const res = await axiosClient.post("products", formdata, {
+            const {
+                data: {
+                    data: { id },
+                },
+                status,
+            } = await axiosClient.post("products", formdata, {
                 headers: {
                     Accept: "application/json",
                     "Content-Type": "multipart/form-data",
                 },
             });
 
-            if (res.status === 200) {
+            if (status === 200) {
                 data["image"] = image;
+                data["id"] = id;
                 navigation.navigate("Product", {
                     product: data,
                 });
