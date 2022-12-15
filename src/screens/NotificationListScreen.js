@@ -112,12 +112,8 @@ function NotificationListScreen() {
                 image: data.attributes.image.data.attributes.url,
             };
 
-            navigation.navigate("HistoryStack", {
-                screen: "Product",
-                params: {
-                    product,
-                },
-                initial: false,
+            navigation.navigate("Product", {
+                product: product,
             });
         } catch (error) {
             console.log("swicthToProductDetail", error);

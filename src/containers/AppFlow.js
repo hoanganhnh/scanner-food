@@ -55,11 +55,6 @@ function HistoryStack() {
     return (
         <Stack.Navigator>
             <Stack.Screen name="History" component={HistorycalScreen} />
-            <Stack.Screen
-                options={{ headerShown: false }}
-                name="Product"
-                component={ProductDetailScreen}
-            />
         </Stack.Navigator>
     );
 }
@@ -170,6 +165,11 @@ export default function AppFlow() {
                     {isLogin ? (
                         <Stack.Group>
                             <Stack.Screen name="Home" component={Home} />
+                            <Stack.Screen
+                                options={{ headerShown: false }}
+                                name="Product"
+                                component={ProductDetailScreen}
+                            />
                         </Stack.Group>
                     ) : (
                         <Stack.Group>

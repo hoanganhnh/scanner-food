@@ -190,11 +190,8 @@ function AddProductSreen() {
 
             if (res.status === 200) {
                 data["image"] = image;
-                navigation.navigate("HistoryStack", {
-                    screen: "Product",
-                    params: {
-                        product: data,
-                    },
+                navigation.navigate("Product", {
+                    product: data,
                 });
                 handleReset();
             }
