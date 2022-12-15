@@ -5,21 +5,22 @@ import {
     StatusBar,
     StyleSheet,
     View,
+    Alert,
 } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 import { CommonButton } from "../components/common/CommonButton";
 import { CommonInput } from "../components/common/CommonInput";
 import { CommonText } from "../components/common/CommonText";
+import axiosClient from "../services/axiosClient";
 import { FontSize, Spacing } from "../styles/spacing";
 import { Device } from "../styles/values";
 
-// @TODO: handle validate
 function LoginSreen() {
     const [email, setEmail] = React.useState("");
     const [errorList, setErrorList] = React.useState([]);
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         Keyboard.dismiss();
         let err = [];
         if (!email) {
@@ -28,7 +29,19 @@ function LoginSreen() {
 
         setErrorList(err);
         if (err.length === 0) {
-            console.log("login");
+            try {
+                const { status } = await axiosClient.post(
+                    "auth/forgot-password",
+                    {
+                        email,
+                    }
+                );
+                if (status === 200) {
+                    Alert.alert("Request successfull !");
+                }
+            } catch (error) {
+                console.log(error);
+            }
         }
     };
 
@@ -67,9 +80,7 @@ function LoginSreen() {
                         <CommonInput
                             placeholder={"Email"}
                             value={email}
-                            onChangeText={(e) => {
-                                setEmail(e);
-                            }}
+                            onChangeText={setEmail}
                             keyboardType="email-address"
                             returnKeyType="next"
                             onSubmitEditing={() => {}}
