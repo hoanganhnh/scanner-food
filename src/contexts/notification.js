@@ -6,15 +6,6 @@ import { COLLECTION_NOTIFICATIONS } from "../constants/app";
 
 const NotificationsContext = createContext({});
 
-// defines how device should handle a notification when the app is running (foreground notifications)
-Notifications.setNotificationHandler({
-    handleNotification: async () => ({
-        shouldShowAlert: true,
-        shouldPlaySound: true,
-        shouldSetBadge: true,
-    }),
-});
-
 const NotificationsContextProvider = ({ children }) => {
     const [notifications, setNotifications] = useState([]);
     const [badgeCount, setBadgeCount] = useState(0);
@@ -124,25 +115,6 @@ const NotificationsContextProvider = ({ children }) => {
 
     useEffect(() => {
         fetchNotifications();
-
-        const foregroundReceivedNotificationSubscription =
-            // listener fired whenever a notification is received while the app is foregrounded
-            Notifications.addNotificationReceivedListener((notification) => {
-                if (notification?.request?.trigger?.remoteMessage?.data) {
-                    const data = JSON.parse(
-                        notification?.request?.trigger.remoteMessage.data.body
-                    );
-
-                    const notificationObject = {
-                        messageId: data.messageId,
-                    };
-                    handleNewNotification(notificationObject);
-                }
-            });
-
-        return () => {
-            foregroundReceivedNotificationSubscription.remove();
-        };
     }, []);
 
     return (

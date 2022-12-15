@@ -16,7 +16,6 @@ function SettingSreen({ navigation }) {
         dispath(logout());
     };
 
-    console.log(badgeCount);
     return (
         <SafeAreaView>
             <ScrollView>

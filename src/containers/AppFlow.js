@@ -4,6 +4,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer } from "@react-navigation/native";
 import { useSelector } from "react-redux";
 import { Icon } from "react-native-elements";
+import * as Notifications from "expo-notifications";
 
 import { useNotifications } from "../hooks/useNotifications";
 import ScanBarCode from "../components/ScanBarCode";
@@ -19,12 +20,12 @@ import HistorycalScreen from "../screens/HistorycalScreen";
 import ProductDetailScreen from "../screens/ProductDetailScreen";
 import { isAuthenticated } from "../app/slices/auth";
 import LinkingConfiguration from "./LinkingConfiguration";
-import AppProvider from "../contexts/app-provider";
 import MealScreen from "../screens/MealScreen";
 import MealDetailScreen from "../screens/MealDetailScreen";
 import NotificationListScreen from "../screens/NotificationListScreen";
 import PolicyScreen from "../screens/PolicyScreen";
 import AlarmScreen from "../screens/AlarmScreen";
+import { useNotifications as useNotificationContexts } from "../contexts/notification";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -155,40 +156,92 @@ function Home() {
 export default function AppFlow() {
     const isLogin = useSelector(isAuthenticated);
     const { registerForPushNotificationsAsync } = useNotifications();
+    const { handleNewNotification } = useNotificationContexts();
+
     React.useEffect(() => {
         registerForPushNotificationsAsync();
+        Notifications.setNotificationHandler({
+            handleNotification: async () => ({
+                shouldShowAlert: true,
+                shouldPlaySound: true,
+                shouldSetBadge: true,
+            }),
+        });
+        const notificationReceived =
+            // listener fired whenever a notification is received while the app is foregrounded
+            Notifications.addNotificationReceivedListener((notification) => {
+                if (notification?.request?.trigger?.payload) {
+                    const data = notification?.request?.trigger?.payload.body;
+                    handleNewNotification(data);
+                }
+                if (notification?.request?.trigger?.remoteMessage?.data) {
+                    const data = JSON.parse(
+                        notification?.request?.trigger.remoteMessage.data.body
+                    );
+
+                    const notificationObject = {
+                        messageId: data.messageId,
+                    };
+                    handleNewNotification(notificationObject);
+                }
+            });
+
+        const notificationResponseReceived =
+            // listener fired whenever a notification is received while the app is foregrounded
+            Notifications.addNotificationResponseReceivedListener(
+                ({ notification }) => {
+                    if (notification?.request?.trigger?.payload) {
+                        const data =
+                            notification?.request?.trigger?.payload.body;
+                        handleNewNotification(data);
+                    }
+                    if (notification?.request?.trigger?.remoteMessage?.data) {
+                        const data = JSON.parse(
+                            notification?.request?.trigger.remoteMessage.data
+                                .body
+                        );
+                        const notificationObject = {
+                            messageId: data.messageId,
+                        };
+                        handleNewNotification(notificationObject);
+                    }
+                }
+            );
+
+        return () => {
+            notificationResponseReceived.remove();
+            notificationReceived.remove();
+        };
     }, []);
     return (
-        <AppProvider>
-            <NavigationContainer linking={LinkingConfiguration} independent>
-                <Stack.Navigator screenOptions={{ headerShown: false }}>
-                    {isLogin ? (
-                        <Stack.Group>
-                            <Stack.Screen name="Home" component={Home} />
-                            <Stack.Screen
-                                options={{ headerShown: false }}
-                                name="Product"
-                                component={ProductDetailScreen}
-                            />
-                        </Stack.Group>
-                    ) : (
-                        <Stack.Group>
-                            <Stack.Screen
-                                name="LoginSreen"
-                                component={LoginSreen}
-                            />
-                            <Stack.Screen
-                                name="RegisterScreen"
-                                component={RegisterScreen}
-                            />
-                            <Stack.Screen
-                                name="ForgotPasswordScreen"
-                                component={ForgotPasswordScreen}
-                            />
-                        </Stack.Group>
-                    )}
-                </Stack.Navigator>
-            </NavigationContainer>
-        </AppProvider>
+        <NavigationContainer linking={LinkingConfiguration} independent>
+            <Stack.Navigator screenOptions={{ headerShown: false }}>
+                {isLogin ? (
+                    <Stack.Group>
+                        <Stack.Screen name="Home" component={Home} />
+                        <Stack.Screen
+                            options={{ headerShown: false }}
+                            name="Product"
+                            component={ProductDetailScreen}
+                        />
+                    </Stack.Group>
+                ) : (
+                    <Stack.Group>
+                        <Stack.Screen
+                            name="LoginSreen"
+                            component={LoginSreen}
+                        />
+                        <Stack.Screen
+                            name="RegisterScreen"
+                            component={RegisterScreen}
+                        />
+                        <Stack.Screen
+                            name="ForgotPasswordScreen"
+                            component={ForgotPasswordScreen}
+                        />
+                    </Stack.Group>
+                )}
+            </Stack.Navigator>
+        </NavigationContainer>
     );
 }

@@ -1,6 +1,6 @@
 {
     "expo": {
-        "name": "bestbefore",
+        "name": "Best Before",
         "slug": "bestbefore",
         "version": "1.0.0",
         "orientation": "portrait",
@@ -19,7 +19,6 @@
         "android": {
             "googleServicesFile": "./google-services.json",
             "package": "com.hoanganh.bestbefore",
-            "version": "1.0.1",
             "versionCode": 1,
             "adaptiveIcon": {
                 "foregroundImage": "./assets/adaptive-icon.png",

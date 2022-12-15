@@ -30,6 +30,7 @@ export async function scheduleNotification({ date, title, body }) {
             content: {
                 title: title,
                 body: body,
+                sound: true,
             },
             trigger: { date: new Date(date) },
         });

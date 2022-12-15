@@ -5,12 +5,15 @@ import { Provider } from "react-redux";
 import store from "./src/app/store";
 import AppFlow from "./src/containers/AppFlow";
 import { LoadingModal } from "./src/components/LoadingModal";
+import AppProvider from "./src/contexts/app-provider";
 
 export default function App() {
     return (
         <Provider store={store}>
             <NavigationContainer>
-                <AppFlow />
+                <AppProvider>
+                    <AppFlow />
+                </AppProvider>
             </NavigationContainer>
             <LoadingModal />
         </Provider>

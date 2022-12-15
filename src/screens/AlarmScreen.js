@@ -162,6 +162,7 @@ function AlarmScreen() {
                                             onChange={() =>
                                                 onChangeNotification(alarm.id)
                                             }
+                                            style={{ marginRight: 16 }}
                                         />
                                         <TouchableOpacity
                                             onPress={() =>
@@ -220,6 +221,7 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderColor: "#ddd",
         marginTop: 8,
+        paddingBottom: 8,
     },
     heading: {
         fontSize: 20,
