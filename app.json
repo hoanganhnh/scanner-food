@@ -2,7 +2,7 @@
     "expo": {
         "name": "Best Before",
         "slug": "bestbefore",
-        "version": "1.0.2",
+        "version": "1.0.3",
         "orientation": "portrait",
         "icon": "./assets/icon.png",
         "userInterfaceStyle": "automatic",
@@ -25,7 +25,7 @@
                 "backgroundColor": "#ffffff"
             },
             "icon": "./assets/notification-icon.png",
-            "useNextNotificationsApi": true
+            "useNextNotificationsApi": false
         },
         "ios": {
             "supportsTablet": true,
